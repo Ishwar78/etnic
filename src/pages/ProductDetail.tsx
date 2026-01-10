@@ -24,10 +24,13 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { addToCart, setIsCartOpen } = useCart();
+  const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const { addToRecentlyViewed, getRecentlyViewed } = useRecentlyViewed();
-  
+
+  const [product, setProduct] = useState<Product | null>(null);
+  const [isProductLoading, setIsProductLoading] = useState(true);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -35,67 +38,116 @@ export default function ProductDetail() {
   const [sizeChart, setSizeChart] = useState<any>(null);
   const [isSizeChartLoading, setIsSizeChartLoading] = useState(false);
 
-  // Find product from database
-  const productId = Number(id) || 1;
-  const product = useMemo(() => {
-    return products.find((p) => p.id === productId) || products[0];
-  }, [productId]);
+  // Fetch product from API
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setIsProductLoading(true);
+        const response = await fetch(`${API_URL}/products/${id}`);
+        if (response.ok) {
+          const data = await response.json();
+          const fetchedProduct = data.product;
+          setProduct(fetchedProduct);
+          addToRecentlyViewed(fetchedProduct);
 
-  // Get product images
-  const productImages = productImagesMap[product.id] || [product.image, product.hoverImage];
+          // Fetch related products
+          fetchRelatedProducts(fetchedProduct);
+        } else {
+          navigate('/shop');
+        }
+      } catch (error) {
+        console.error('Error fetching product:', error);
+        navigate('/shop');
+      } finally {
+        setIsProductLoading(false);
+      }
+    };
 
-  // Get product details
-  const productDetails = productDescriptions[String(product.id)] || defaultDescription;
+    if (id) {
+      fetchProduct();
+    }
+  }, [id, navigate, addToRecentlyViewed]);
 
-  // Get related products
-  const relatedProducts = useMemo(() => {
-    return getRelatedProducts({ currentProduct: product, limit: 4 });
-  }, [product]);
+  // Fetch related products
+  const fetchRelatedProducts = async (currentProduct: Product) => {
+    try {
+      const response = await fetch(`${API_URL}/products?limit=20`);
+      if (response.ok) {
+        const data = await response.json();
+        const products = data.products || [];
+
+        // Calculate relevance score and sort
+        const scoredProducts = products
+          .filter((p: Product) => p._id !== currentProduct._id)
+          .map((product: Product) => {
+            let score = 0;
+
+            if (product.category === currentProduct.category) score += 50;
+            if (product.subcategory === currentProduct.subcategory) score += 40;
+
+            const priceRange = currentProduct.price * 0.2;
+            if (product.price >= currentProduct.price - priceRange &&
+                product.price <= currentProduct.price + priceRange) {
+              score += 20;
+            }
+
+            if (product.isBestseller) score += 5;
+            if (product.isNew) score += 5;
+
+            return { product, score };
+          })
+          .filter(({ score }) => score > 0)
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 4)
+          .map(({ product }) => product);
+
+        setRelatedProducts(scoredProducts);
+      }
+    } catch (error) {
+      console.error('Error fetching related products:', error);
+    }
+  };
 
   // Get recently viewed (excluding current product)
-  const recentlyViewedItems = getRecentlyViewed(product.id, 4);
+  const recentlyViewedItems = product ? getRecentlyViewed(product._id || product.id, 4) : [];
 
   // Check if wishlisted
-  const isWishlisted = isInWishlist(product.id);
-
-  // Add to recently viewed on mount
-  useEffect(() => {
-    addToRecentlyViewed(product);
-  }, [product, addToRecentlyViewed]);
+  const isWishlisted = product ? isInWishlist(product._id || product.id) : false;
 
   // Load reviews on mount
   useEffect(() => {
-    const storedReviews = getStoredReviews(productId);
-    const allReviews = [...storedReviews, ...defaultReviews.filter(
-      (dr) => !storedReviews.some((sr) => sr.id === dr.id)
-    )];
-    setReviews(allReviews);
-  }, [productId]);
+    if (product) {
+      const productId = typeof product.id === 'string' ? parseInt(product.id) : (product._id || product.id);
+      const storedReviews = getStoredReviews(productId);
+      setReviews(storedReviews);
+    }
+  }, [product]);
 
   // Reset state when product changes
   useEffect(() => {
     setSelectedSize(null);
     setQuantity(1);
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [productId]);
+  }, [id]);
 
   // Fetch size chart when dialog opens
   useEffect(() => {
-    if (isSizeChartOpen && !sizeChart) {
+    if (isSizeChartOpen && !sizeChart && product) {
       fetchSizeChart();
     }
-  }, [isSizeChartOpen]);
+  }, [isSizeChartOpen, product]);
 
   const fetchSizeChart = async () => {
     try {
       setIsSizeChartLoading(true);
-      // Note: In a real app, you'd fetch this from the backend using the product's DB ID
-      // For now, we'll try to fetch it (it may not exist for demo products)
-      // In production, you'd need to get the actual MongoDB ID from the product
-      // For this demo, we'll just show a message if no chart is found
-      setSizeChart(null); // Placeholder - would be real chart data from API
+      const response = await fetch(`${API_URL}/size-charts?productId=${product?._id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setSizeChart(data.sizeChart || null);
+      }
     } catch (error) {
       console.error('Error fetching size chart:', error);
+      setSizeChart(null);
     } finally {
       setIsSizeChartLoading(false);
     }
