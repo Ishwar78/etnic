@@ -57,7 +57,6 @@ export default function EthnicWear() {
       products={ethnicProducts}
       filterCategories={filterCategories}
       heroBg="bg-gradient-to-b from-primary/10 to-background"
-      isLoading={isLoading}
     />
   );
 }
