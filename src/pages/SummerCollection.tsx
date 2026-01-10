@@ -56,7 +56,6 @@ export default function SummerCollection() {
       metaDescription="Shop our summer collection. Light fabrics, bright colors, and breathable outfits perfect for the season. Free shipping above ₹999."
       products={summerProducts}
       heroBg="bg-gradient-to-b from-yellow-100/50 to-background"
-      isLoading={isLoading}
     />
   );
 }
