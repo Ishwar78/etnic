@@ -202,17 +202,59 @@ export default function ProductDetail() {
   const ratingDistribution = [5, 4, 3, 2, 1].map((star) => ({
     star,
     count: reviews.filter((r) => r.rating === star).length,
-    percentage: reviews.length > 0 
-      ? (reviews.filter((r) => r.rating === star).length / reviews.length) * 100 
+    percentage: reviews.length > 0
+      ? (reviews.filter((r) => r.rating === star).length / reviews.length) * 100
       : 0,
   }));
 
   // Get breadcrumb category link
   const getCategoryLink = () => {
-    if (product.isEthnic) return "/ethnic-wear";
-    if (product.isWestern) return "/western-wear";
+    if (!product) return "/shop";
+    const categoryLower = (product.category || '').toLowerCase();
+    if (categoryLower.includes('ethnic')) return "/ethnic-wear";
+    if (categoryLower.includes('western')) return "/western-wear";
     return "/shop";
   };
+
+  if (isProductLoading) {
+    return (
+      <>
+        <div className="min-h-screen bg-background">
+          <Header />
+          <main className="pt-24 pb-16">
+            <div className="container mx-auto px-4 py-16">
+              <div className="flex items-center justify-center min-h-[600px]">
+                <div className="text-center">
+                  <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
+                  <p className="text-muted-foreground text-lg">Loading product details...</p>
+                </div>
+              </div>
+            </div>
+          </main>
+          <Footer />
+        </div>
+      </>
+    );
+  }
+
+  if (!product) {
+    return (
+      <>
+        <div className="min-h-screen bg-background">
+          <Header />
+          <main className="pt-24 pb-16">
+            <div className="container mx-auto px-4 py-16">
+              <div className="text-center">
+                <h1 className="font-display text-3xl font-bold text-foreground mb-4">Product Not Found</h1>
+                <Button onClick={() => navigate('/shop')}>Back to Shop</Button>
+              </div>
+            </div>
+          </main>
+          <Footer />
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -224,7 +266,7 @@ export default function ProductDetail() {
             "@context": "https://schema.org",
             "@type": "Product",
             "name": product.name,
-            "description": productDetails.description,
+            "description": product.description || product.name,
             "image": product.image,
             "offers": {
               "@type": "Offer",
