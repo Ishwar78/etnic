@@ -375,33 +375,35 @@ export default function ProductDetail() {
                 </div>
 
                 {/* Size Selector */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-medium">Select Size</h3>
-                    <button
-                      onClick={() => setIsSizeChartOpen(true)}
-                      className="text-sm text-primary hover:underline transition-colors"
-                    >
-                      Size Guide
-                    </button>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {product.sizes.map((size) => (
+                {product.sizes && product.sizes.length > 0 && (
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="font-medium">Select Size</h3>
                       <button
-                        key={size}
-                        onClick={() => setSelectedSize(size)}
-                        className={cn(
-                          "h-12 min-w-[48px] px-4 rounded-md border-2 font-medium transition-all",
-                          selectedSize === size
-                            ? "border-primary bg-primary text-primary-foreground"
-                            : "border-border hover:border-primary"
-                        )}
+                        onClick={() => setIsSizeChartOpen(true)}
+                        className="text-sm text-primary hover:underline transition-colors"
                       >
-                        {size}
+                        Size Guide
                       </button>
-                    ))}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {product.sizes.map((size) => (
+                        <button
+                          key={size}
+                          onClick={() => setSelectedSize(size)}
+                          className={cn(
+                            "h-12 min-w-[48px] px-4 rounded-md border-2 font-medium transition-all",
+                            selectedSize === size
+                              ? "border-primary bg-primary text-primary-foreground"
+                              : "border-border hover:border-primary"
+                          )}
+                        >
+                          {size}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Quantity */}
                 <div>
