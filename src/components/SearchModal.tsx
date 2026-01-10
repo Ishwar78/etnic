@@ -6,7 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { products, Product, categories } from "@/data/products";
+import { Product } from "@/data/products";
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -16,15 +18,40 @@ interface SearchModalProps {
 export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
+  const [products, setProducts] = useState<Product[]>([]);
   const [query, setQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 20000]);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+
+  // Fetch products when modal opens
+  useEffect(() => {
+    if (isOpen && products.length === 0) {
+      fetchProducts();
+    }
+  }, [isOpen]);
+
+  const fetchProducts = async () => {
+    try {
+      setIsLoadingProducts(true);
+      const response = await fetch(`${API_URL}/products?limit=100`);
+      if (response.ok) {
+        const data = await response.json();
+        setProducts(data.products || []);
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      setProducts([]);
+    } finally {
+      setIsLoadingProducts(false);
+    }
+  };
 
   // Get min/max prices from products
-  const minPrice = Math.min(...products.map((p) => p.price));
-  const maxPrice = Math.max(...products.map((p) => p.price));
+  const minPrice = products.length > 0 ? Math.min(...products.map((p) => p.price)) : 0;
+  const maxPrice = products.length > 0 ? Math.max(...products.map((p) => p.price)) : 20000;
 
   // Filter products based on search query, category, and price
   const filteredProducts = useMemo(() => {
@@ -32,20 +59,21 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
       const matchesQuery =
         query.trim() === "" ||
         product.name.toLowerCase().includes(query.toLowerCase()) ||
-        product.category.toLowerCase().includes(query.toLowerCase()) ||
-        product.subcategory?.toLowerCase().includes(query.toLowerCase());
+        (product.category && product.category.toLowerCase().includes(query.toLowerCase())) ||
+        (product.subcategory && product.subcategory.toLowerCase().includes(query.toLowerCase()));
 
+      const categoryDisplay = product.category === 'ethnic_wear' ? 'Ethnic Wear' : 'Western Wear';
       const matchesCategory =
         selectedCategory === "All" ||
-        product.category === selectedCategory ||
-        product.subcategory?.toLowerCase().includes(selectedCategory.toLowerCase());
+        categoryDisplay === selectedCategory ||
+        (product.subcategory && product.subcategory.toLowerCase().includes(selectedCategory.toLowerCase()));
 
       const matchesPrice =
         product.price >= priceRange[0] && product.price <= priceRange[1];
 
       return matchesQuery && matchesCategory && matchesPrice;
     });
-  }, [query, selectedCategory, priceRange]);
+  }, [query, selectedCategory, priceRange, products]);
 
   // Focus input when modal opens
   useEffect(() => {
@@ -89,7 +117,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   }, [isOpen, highlightedIndex, filteredProducts, onClose]);
 
   const handleProductClick = (product: Product) => {
-    navigate(`/product/${product.id}`);
+    navigate(`/product/${product._id || product.id}`);
     onClose();
   };
 

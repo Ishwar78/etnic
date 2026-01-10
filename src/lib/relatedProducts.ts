@@ -1,18 +1,27 @@
-import { Product, products } from "@/data/products";
+import { Product } from "@/data/products";
 
 interface RelatedProductsOptions {
   currentProduct: Product;
+  products: Product[];
   limit?: number;
 }
 
-export function getRelatedProducts({ currentProduct, limit = 4 }: RelatedProductsOptions): Product[] {
+/**
+ * Calculate related products based on relevance scoring
+ * Note: This function now requires the products array to be passed as a parameter
+ * since products are now fetched from the API instead of stored locally.
+ *
+ * In ProductDetail.tsx, related products are fetched directly from the API.
+ * This utility is kept for backward compatibility with other components.
+ */
+export function getRelatedProducts({ currentProduct, products, limit = 4 }: RelatedProductsOptions): Product[] {
   const priceRange = 0.2; // ±20%
   const minPrice = currentProduct.price * (1 - priceRange);
   const maxPrice = currentProduct.price * (1 + priceRange);
 
   // Score each product for relevance
   const scoredProducts = products
-    .filter((p) => p.id !== currentProduct.id)
+    .filter((p) => p._id !== currentProduct._id && p.id !== currentProduct.id)
     .map((product) => {
       let score = 0;
 
@@ -35,10 +44,6 @@ export function getRelatedProducts({ currentProduct, limit = 4 }: RelatedProduct
       if (currentProduct.isSummer && product.isSummer) score += 10;
       if (currentProduct.isWinter && product.isWinter) score += 10;
 
-      // Same type (Ethnic/Western)
-      if (currentProduct.isEthnic && product.isEthnic) score += 15;
-      if (currentProduct.isWestern && product.isWestern) score += 15;
-
       // Bonus for bestsellers and new items
       if (product.isBestseller) score += 5;
       if (product.isNew) score += 5;
@@ -53,13 +58,13 @@ export function getRelatedProducts({ currentProduct, limit = 4 }: RelatedProduct
   // If not enough related products, fill with bestsellers from same category
   if (scoredProducts.length < limit) {
     const remaining = limit - scoredProducts.length;
-    const existingIds = new Set([currentProduct.id, ...scoredProducts.map((p) => p.id)]);
-    
+    const existingIds = new Set([currentProduct._id, currentProduct.id, ...scoredProducts.map((p) => p._id || p.id)]);
+
     const fallbackProducts = products
-      .filter((p) => !existingIds.has(p.id))
+      .filter((p) => !existingIds.has(p._id) && !existingIds.has(p.id))
       .filter((p) => p.category === currentProduct.category || p.isBestseller)
       .slice(0, remaining);
-    
+
     return [...scoredProducts, ...fallbackProducts];
   }
 

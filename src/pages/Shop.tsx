@@ -1,38 +1,18 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { Filter, Grid3X3, LayoutGrid, ChevronDown, Heart, Eye, ShoppingBag, Loader2 } from "lucide-react";
+import { Filter, Grid3X3, LayoutGrid, Heart, Eye, ShoppingBag, Loader2 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
-import product1 from "@/assets/product-1.jpg";
-import product2 from "@/assets/product-2.jpg";
-import product3 from "@/assets/product-3.jpg";
-import product4 from "@/assets/product-4.jpg";
-import product5 from "@/assets/product-5.jpg";
-import product6 from "@/assets/product-6.jpg";
-import product7 from "@/assets/product-7.jpg";
-import product8 from "@/assets/product-8.jpg";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-const fallbackProducts = [
-  { id: 1, name: "Royal Burgundy Embroidered Suit", price: 4999, originalPrice: 6999, discount: 29, image: product1, hoverImage: product5, category: "Ethnic Wear", sizes: ["M", "L", "XL"], colors: ["Burgundy"], isNew: true },
-  { id: 2, name: "Royal Blue Anarkali Set", price: 5499, originalPrice: 7999, discount: 31, image: product2, hoverImage: product7, category: "Anarkali", sizes: ["S", "M", "L"], colors: ["Blue"], isBestseller: true },
-  { id: 3, name: "Pink Bridal Lehenga", price: 12999, originalPrice: 18999, discount: 32, image: product3, hoverImage: product3, category: "Lehenga", sizes: ["M", "L", "XL", "XXL"], colors: ["Pink"], isNew: true },
-  { id: 4, name: "Emerald Silk Saree", price: 8999, originalPrice: 11999, discount: 25, image: product4, hoverImage: product4, category: "Saree", sizes: ["Free Size"], colors: ["Green"] },
-  { id: 5, name: "Maroon Sharara Suit", price: 6999, originalPrice: 9999, discount: 30, image: product5, hoverImage: product1, category: "Sharara", sizes: ["M", "L", "XL"], colors: ["Maroon"], isBestseller: true },
-  { id: 6, name: "Ivory Gold Palazzo Set", price: 4499, originalPrice: 5999, discount: 25, image: product6, hoverImage: product6, category: "Palazzo", sizes: ["S", "M", "L", "XL"], colors: ["Ivory"] },
-  { id: 7, name: "Teal Georgette Kurta Set", price: 3999, originalPrice: 5499, discount: 27, image: product7, hoverImage: product2, category: "Kurta Set", sizes: ["M", "L", "XL"], colors: ["Teal"], isNew: true },
-  { id: 8, name: "Orange Bandhani Suit", price: 3499, originalPrice: 4999, discount: 30, image: product8, hoverImage: product8, category: "Ethnic Wear", sizes: ["S", "M", "L"], colors: ["Orange"] },
-];
-
-const categories = ["All", "Ethnic Wear", "Anarkali", "Lehenga", "Saree", "Sharara", "Palazzo", "Kurta Set"];
-const sizes = ["S", "M", "L", "XL", "XXL", "XXXL"];
+const categories = ["All", "Ethnic Wear", "Western Wear"];
+const sizes = ["S", "M", "L", "XL", "XXL", "XXXL", "Free Size"];
 const colors = [
   { name: "Burgundy", hex: "#722F37" },
   { name: "Blue", hex: "#1E3A8A" },
@@ -42,6 +22,10 @@ const colors = [
   { name: "Ivory", hex: "#FFFFF0" },
   { name: "Teal", hex: "#0D9488" },
   { name: "Orange", hex: "#EA580C" },
+  { name: "Red", hex: "#DC2626" },
+  { name: "White", hex: "#FFFFFF" },
+  { name: "Black", hex: "#000000" },
+  { name: "Gold", hex: "#FBBF24" },
 ];
 
 const sortOptions = [
@@ -51,9 +35,24 @@ const sortOptions = [
   { label: "Newest First", value: "newest" },
 ];
 
+interface Product {
+  _id: string;
+  id: string;
+  name: string;
+  price: number;
+  originalPrice: number;
+  discount: number;
+  image: string;
+  category: string;
+  sizes: string[];
+  colors: string[];
+  isNew?: boolean;
+  isBestseller?: boolean;
+}
+
 export default function Shop() {
   const [searchParams] = useSearchParams();
-  const [products, setProducts] = useState(fallbackProducts);
+  const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [gridCols, setGridCols] = useState<3 | 4>(4);
@@ -71,24 +70,28 @@ export default function Shop() {
         const response = await fetch(`${API_URL}/products`);
         if (response.ok) {
           const data = await response.json();
-          const mappedProducts = data.products.map((p: any) => ({
+          const mappedProducts = (data.products || []).map((p: any) => ({
             _id: p._id,
             id: p._id,
             name: p.name,
             price: p.price,
-            originalPrice: p.originalPrice,
-            discount: Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100),
+            originalPrice: p.originalPrice || p.price,
+            discount: p.originalPrice ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : 0,
             image: p.image,
             category: p.category === 'ethnic_wear' ? 'Ethnic Wear' : 'Western Wear',
             sizes: p.sizes || [],
             colors: p.colors || [],
-            isNew: p.isNew,
-            isBestseller: p.isBestseller,
+            isNew: p.isNew || false,
+            isBestseller: p.isBestseller || false,
           }));
           setProducts(mappedProducts);
+        } else {
+          console.error('Failed to fetch products');
+          setProducts([]);
         }
       } catch (error) {
         console.error('Error fetching products:', error);
+        setProducts([]);
       } finally {
         setIsLoading(false);
       }
