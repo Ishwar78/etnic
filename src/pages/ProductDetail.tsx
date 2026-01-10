@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { Heart, Share2, Truck, Shield, RotateCcw, Minus, Plus, ChevronRight, Star, ShoppingBag, X } from "lucide-react";
+import { Heart, Share2, Truck, Shield, RotateCcw, Minus, Plus, ChevronRight, Star, ShoppingBag, Loader2 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -17,70 +17,9 @@ import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
 import { getStoredReviews, saveReview } from "@/lib/reviews";
-import { getRelatedProducts } from "@/lib/relatedProducts";
-import { products, Product } from "@/data/products";
-import product1 from "@/assets/product-1.jpg";
-import product2 from "@/assets/product-2.jpg";
-import product3 from "@/assets/product-3.jpg";
-import product5 from "@/assets/product-5.jpg";
+import { Product } from "@/data/products";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-
-// Extended product data with additional images
-const productImagesMap: Record<number, string[]> = {
-  1: [product1, product5, product2, product3],
-  2: [product2, product1, product3, product5],
-  3: [product3, product1, product2, product5],
-};
-
-interface ProductDescription {
-  description: string;
-  features: string[];
-}
-
-const productDescriptions: Record<string, ProductDescription> = {
-  "1": {
-    description: `Elevate your festive wardrobe with this exquisite Royal Burgundy Embroidered Suit. 
-Crafted with premium georgette fabric and adorned with intricate zari embroidery, 
-this piece perfectly blends traditional artistry with contemporary elegance.
-
-- Premium quality georgette fabric
-- Intricate gold zari embroidery
-- Includes kurta, palazzo, and matching dupatta
-- Semi-stitched for custom fit
-- Dry clean only`,
-    features: [
-      "Premium Georgette Fabric",
-      "Handcrafted Embroidery",
-      "Full Sleeves with Work",
-      "Round Neck Design",
-      "Matching Dupatta Included",
-    ],
-  },
-};
-
-const defaultDescription: ProductDescription = {
-  description: `Experience the perfect blend of comfort and elegance with this stunning piece. 
-Crafted with premium quality fabric, this outfit is designed to make you stand out at any occasion.
-
-- Premium quality fabric
-- Elegant design
-- Comfortable fit
-- Easy to maintain`,
-  features: [
-    "Premium Quality Fabric",
-    "Elegant Design",
-    "Comfortable Fit",
-    "Versatile Style",
-    "Easy Care",
-  ],
-};
-
-const defaultReviews: Review[] = [
-  { id: "default-1", name: "Priya S.", rating: 5, comment: "Absolutely stunning! The embroidery is even more beautiful in person.", date: "2 days ago", productId: 1 },
-  { id: "default-2", name: "Anita M.", rating: 4, comment: "Great quality and fits perfectly. Delivery was fast too!", date: "1 week ago", productId: 1 },
-  { id: "default-3", name: "Kavita R.", rating: 5, comment: "Wore this for Diwali and received so many compliments!", date: "2 weeks ago", productId: 1 },
-];
 
 export default function ProductDetail() {
   const { id } = useParams();
