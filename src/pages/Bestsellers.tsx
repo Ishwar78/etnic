@@ -56,7 +56,6 @@ export default function Bestsellers() {
       products={bestsellers}
       showTrending
       heroBg="bg-gradient-to-b from-primary/5 to-background"
-      isLoading={isLoading}
     />
   );
 }
