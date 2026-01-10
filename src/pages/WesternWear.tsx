@@ -57,7 +57,6 @@ export default function WesternWear() {
       products={westernProducts}
       filterCategories={filterCategories}
       heroBg="bg-gradient-to-b from-secondary/10 to-background"
-      isLoading={isLoading}
     />
   );
 }
