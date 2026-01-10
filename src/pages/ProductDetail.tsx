@@ -309,10 +309,10 @@ export default function ProductDetail() {
           <div className="container mx-auto px-4">
             <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
               {/* Image Gallery */}
-              <ProductImageGallery 
-                images={productImages}
+              <ProductImageGallery
+                images={product.images && product.images.length > 0 ? product.images : [product.image]}
                 productName={product.name}
-                discount={product.discount}
+                discount={product.discount || 0}
               />
 
               {/* Product Info */}
