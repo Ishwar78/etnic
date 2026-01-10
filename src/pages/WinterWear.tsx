@@ -56,7 +56,6 @@ export default function WinterWear() {
       metaDescription="Shop our winter collection. Warm fabrics, rich colors, and stylish winter outfits. Free shipping above ₹999."
       products={winterProducts}
       heroBg="bg-gradient-to-b from-slate-100/50 to-background"
-      isLoading={isLoading}
     />
   );
 }
