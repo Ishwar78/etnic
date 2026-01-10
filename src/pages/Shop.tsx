@@ -35,9 +35,24 @@ const sortOptions = [
   { label: "Newest First", value: "newest" },
 ];
 
+interface Product {
+  _id: string;
+  id: string;
+  name: string;
+  price: number;
+  originalPrice: number;
+  discount: number;
+  image: string;
+  category: string;
+  sizes: string[];
+  colors: string[];
+  isNew?: boolean;
+  isBestseller?: boolean;
+}
+
 export default function Shop() {
   const [searchParams] = useSearchParams();
-  const [products, setProducts] = useState(fallbackProducts);
+  const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [gridCols, setGridCols] = useState<3 | 4>(4);
@@ -55,24 +70,28 @@ export default function Shop() {
         const response = await fetch(`${API_URL}/products`);
         if (response.ok) {
           const data = await response.json();
-          const mappedProducts = data.products.map((p: any) => ({
+          const mappedProducts = (data.products || []).map((p: any) => ({
             _id: p._id,
             id: p._id,
             name: p.name,
             price: p.price,
-            originalPrice: p.originalPrice,
-            discount: Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100),
+            originalPrice: p.originalPrice || p.price,
+            discount: p.originalPrice ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : 0,
             image: p.image,
             category: p.category === 'ethnic_wear' ? 'Ethnic Wear' : 'Western Wear',
             sizes: p.sizes || [],
             colors: p.colors || [],
-            isNew: p.isNew,
-            isBestseller: p.isBestseller,
+            isNew: p.isNew || false,
+            isBestseller: p.isBestseller || false,
           }));
           setProducts(mappedProducts);
+        } else {
+          console.error('Failed to fetch products');
+          setProducts([]);
         }
       } catch (error) {
         console.error('Error fetching products:', error);
+        setProducts([]);
       } finally {
         setIsLoading(false);
       }
