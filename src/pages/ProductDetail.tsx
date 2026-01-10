@@ -322,6 +322,8 @@ export default function ProductDetail() {
                   <span className="text-gold font-medium text-sm uppercase tracking-wider">
                     {product.category}
                     {product.subcategory && ` • ${product.subcategory}`}
+                    {product.isNew && ' • NEW'}
+                    {product.isBestseller && ' • BESTSELLER'}
                   </span>
                   <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mt-2">
                     {product.name}
