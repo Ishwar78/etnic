@@ -1,44 +1,44 @@
 import { useState, useEffect } from "react";
 import CollectionLayout from "@/components/CollectionLayout";
-import { products } from "@/data/products";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 export default function Bestsellers() {
-  const [apiProducts, setApiProducts] = useState<any[]>([]);
+  const [bestsellers, setBestsellers] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        setIsLoading(true);
         const response = await fetch(`${API_URL}/products`);
         if (response.ok) {
           const data = await response.json();
           // Map API products to expected format
-          const mapped = data.products
+          const mapped = (data.products || [])
             .filter((p: any) => p.isBestseller)
             .map((p: any) => ({
               _id: p._id,
               id: p._id,
               name: p.name,
               price: p.price,
-              originalPrice: p.originalPrice,
-              discount: Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100),
+              originalPrice: p.originalPrice || p.price,
+              discount: p.originalPrice ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : 0,
               image: p.image,
-              hoverImage: p.image,
-              category: p.category || "All",
+              category: p.category === 'ethnic_wear' ? 'Ethnic Wear' : 'Western Wear',
               subcategory: p.subcategory || "All",
               sizes: p.sizes || [],
               colors: p.colors || [],
               isNew: p.isNew || false,
               isBestseller: true,
-              isSummer: p.isSummer || false,
-              isWinter: p.isWinter || false,
             }));
-          setApiProducts(mapped);
+          setBestsellers(mapped);
+        } else {
+          setBestsellers([]);
         }
       } catch (error) {
         console.error("Error fetching products:", error);
+        setBestsellers([]);
       } finally {
         setIsLoading(false);
       }
@@ -46,11 +46,6 @@ export default function Bestsellers() {
 
     fetchProducts();
   }, []);
-
-  // Use API products if available, otherwise fallback to hardcoded products
-  const bestsellers = apiProducts.length > 0
-    ? apiProducts
-    : products.filter(p => p.isBestseller);
 
   return (
     <CollectionLayout
