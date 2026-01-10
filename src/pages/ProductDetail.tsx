@@ -498,18 +498,15 @@ export default function ProductDetail() {
 
               <TabsContent value="description" className="mt-8">
                 <div className="max-w-3xl">
-                  <p className="text-muted-foreground whitespace-pre-line leading-relaxed">
-                    {productDetails.description}
-                  </p>
-                  <h3 className="font-display text-xl font-semibold mt-8 mb-4">Features</h3>
-                  <ul className="space-y-2">
-                    {productDetails.features.map((feature, index) => (
-                      <li key={index} className="flex items-center gap-2 text-muted-foreground">
-                        <span className="h-1.5 w-1.5 rounded-full bg-gold" />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
+                  {product.description ? (
+                    <p className="text-muted-foreground whitespace-pre-line leading-relaxed">
+                      {product.description}
+                    </p>
+                  ) : (
+                    <p className="text-muted-foreground italic">
+                      No detailed description available. Please contact us for more information.
+                    </p>
+                  )}
                 </div>
               </TabsContent>
 
