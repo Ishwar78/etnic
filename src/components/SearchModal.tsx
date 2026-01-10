@@ -59,20 +59,21 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
       const matchesQuery =
         query.trim() === "" ||
         product.name.toLowerCase().includes(query.toLowerCase()) ||
-        product.category.toLowerCase().includes(query.toLowerCase()) ||
-        product.subcategory?.toLowerCase().includes(query.toLowerCase());
+        (product.category && product.category.toLowerCase().includes(query.toLowerCase())) ||
+        (product.subcategory && product.subcategory.toLowerCase().includes(query.toLowerCase()));
 
+      const categoryDisplay = product.category === 'ethnic_wear' ? 'Ethnic Wear' : 'Western Wear';
       const matchesCategory =
         selectedCategory === "All" ||
-        product.category === selectedCategory ||
-        product.subcategory?.toLowerCase().includes(selectedCategory.toLowerCase());
+        categoryDisplay === selectedCategory ||
+        (product.subcategory && product.subcategory.toLowerCase().includes(selectedCategory.toLowerCase()));
 
       const matchesPrice =
         product.price >= priceRange[0] && product.price <= priceRange[1];
 
       return matchesQuery && matchesCategory && matchesPrice;
     });
-  }, [query, selectedCategory, priceRange]);
+  }, [query, selectedCategory, priceRange, products]);
 
   // Focus input when modal opens
   useEffect(() => {
