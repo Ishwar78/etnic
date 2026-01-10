@@ -607,13 +607,15 @@ export default function ProductDetail() {
           </div>
 
           {/* Related Products */}
-          <div className="mt-16">
-            <RelatedProducts 
-              products={relatedProducts}
-              title="You May Also Like"
-              subtitle="Similar styles you'll love"
-            />
-          </div>
+          {relatedProducts.length > 0 && (
+            <div className="mt-16">
+              <RelatedProducts
+                products={relatedProducts}
+                title="You May Also Like"
+                subtitle="Similar styles you'll love"
+              />
+            </div>
+          )}
 
           {/* Recently Viewed */}
           {recentlyViewedItems.length > 0 && (
