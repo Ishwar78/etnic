@@ -155,7 +155,7 @@ export default function ProductDetail() {
 
   const averageRating = reviews.length > 0
     ? reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length
-    : 4.5;
+    : 0;
 
   const handleReviewSubmitted = (newReview: Review) => {
     saveReview(newReview);
@@ -163,9 +163,11 @@ export default function ProductDetail() {
   };
 
   const handleAddToCart = () => {
+    if (!product) return;
+
     addToCart(
       {
-        id: product.id,
+        id: product._id || product.id,
         name: product.name,
         price: product.price,
         originalPrice: product.originalPrice,
@@ -183,14 +185,16 @@ export default function ProductDetail() {
   };
 
   const handleToggleWishlist = () => {
+    if (!product) return;
+
     toggleWishlist({
-      id: product.id,
+      id: product._id || product.id,
       name: product.name,
       price: product.price,
       originalPrice: product.originalPrice,
       image: product.image,
       category: product.category,
-      discount: product.discount,
+      discount: product.discount || 0,
     });
   };
 
