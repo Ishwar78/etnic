@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import CollectionLayout from "@/components/CollectionLayout";
 import { Product } from "@/data/products";
+import { normalizeProduct } from "@/lib/normalizeProduct";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -14,9 +15,10 @@ export default function Lehengas() {
         setIsLoading(true);
         const response = await fetch(`${API_URL}/products?category=ethnic_wear`);
         const data = await response.json();
-        if (data.success) {
-          const filtered = data.products.filter((p: Product) => p.subcategory === "Lehengas");
-          setProducts(filtered);
+        if (data.success || data.products) {
+          const filtered = (data.products || []).filter((p: any) => p.subcategory === "Lehengas");
+          const mapped = filtered.map((p: any) => normalizeProduct(p));
+          setProducts(mapped);
         }
       } catch (error) {
         console.error('Error fetching products:', error);
