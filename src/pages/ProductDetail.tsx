@@ -21,6 +21,47 @@ import { Product } from "@/data/products";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
+// Color name to hex mapping
+const colorMap: { [key: string]: string } = {
+  'Red': '#DC2626',
+  'Blue': '#1E3A8A',
+  'Green': '#059669',
+  'Yellow': '#EAB308',
+  'Pink': '#EC4899',
+  'Purple': '#7C3AED',
+  'Orange': '#EA580C',
+  'Black': '#000000',
+  'White': '#FFFFFF',
+  'Gray': '#6B7280',
+  'Brown': '#92400E',
+  'Burgundy': '#722F37',
+  'Maroon': '#800000',
+  'Ivory': '#FFFFF0',
+  'Teal': '#0D9488',
+  'Gold': '#FBBF24',
+  'Silver': '#D1D5DB',
+  'Navy': '#001F3F',
+  'Khaki': '#F0E68C',
+  'Beige': '#F5F5DC',
+};
+
+function getColorHex(colorName: string): string | null {
+  // Try exact match first
+  if (colorMap[colorName]) {
+    return colorMap[colorName];
+  }
+
+  // Try case-insensitive match
+  const lowerName = colorName.toLowerCase();
+  for (const [key, value] of Object.entries(colorMap)) {
+    if (key.toLowerCase() === lowerName) {
+      return value;
+    }
+  }
+
+  return null;
+}
+
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -117,8 +158,8 @@ export default function ProductDetail() {
   // Load reviews on mount
   useEffect(() => {
     if (product) {
-      const productId = typeof product.id === 'string' ? parseInt(product.id) : (product._id || product.id);
-      const storedReviews = getStoredReviews(productId);
+      const productId = product._id || product.id;
+      const storedReviews = getStoredReviews(productId as any);
       setReviews(storedReviews);
     }
   }, [product]);
@@ -411,6 +452,32 @@ export default function ProductDetail() {
                   </div>
                 )}
 
+                {/* Color Selector */}
+                {product.colors && product.colors.length > 0 && (
+                  <div>
+                    <h3 className="font-medium mb-3">Available Colors</h3>
+                    <div className="flex flex-wrap gap-3">
+                      {product.colors.map((color) => (
+                        <div
+                          key={color}
+                          className="flex flex-col items-center gap-2"
+                        >
+                          <div
+                            className="h-10 w-10 rounded-full border-2 border-border hover:border-primary transition-colors cursor-pointer"
+                            title={color}
+                            style={{
+                              backgroundColor: getColorHex(color) || '#cccccc',
+                            }}
+                          />
+                          <span className="text-xs text-muted-foreground text-center max-w-[60px] truncate">
+                            {color}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Quantity */}
                 <div>
                   <h3 className="font-medium mb-3">Quantity</h3>
@@ -567,7 +634,7 @@ export default function ProductDetail() {
                   {/* Reviews List & Form */}
                   <div className="lg:col-span-2 space-y-8">
                     {/* Review Form */}
-                    <ReviewForm productId={productId} onReviewSubmitted={handleReviewSubmitted} />
+                    <ReviewForm productId={product._id || product.id || '0'} onReviewSubmitted={handleReviewSubmitted} />
 
                     {/* Reviews List */}
                     <div className="space-y-6">

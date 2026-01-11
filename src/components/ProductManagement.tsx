@@ -675,12 +675,73 @@ export default function ProductManagement() {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Colors (comma separated)</Label>
-                <Input
-                  value={formData.colors}
-                  onChange={(e) => setFormData({ ...formData, colors: e.target.value })}
-                  placeholder="Red, Blue"
-                />
+                <Label>Colors</Label>
+                <div className="space-y-2">
+                  <div className="flex flex-wrap gap-2 p-3 border rounded-md border-border bg-muted/30 min-h-[44px]">
+                    {formData.colors.split(",").map((color) => {
+                      const trimmedColor = color.trim();
+                      return trimmedColor ? (
+                        <span
+                          key={trimmedColor}
+                          className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary text-primary-foreground text-sm font-medium"
+                        >
+                          {trimmedColor}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const colors = formData.colors
+                                .split(",")
+                                .map(c => c.trim())
+                                .filter(c => c && c !== trimmedColor)
+                                .join(", ");
+                              setFormData({ ...formData, colors });
+                            }}
+                            className="hover:opacity-70"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ) : null;
+                    })}
+                  </div>
+                  <div className="flex gap-2">
+                    <Input
+                      id="color-input"
+                      placeholder="Add a color..."
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          const input = (e.target as HTMLInputElement);
+                          const newColor = input.value.trim();
+                          if (newColor && !formData.colors.includes(newColor)) {
+                            const colors = formData.colors ? formData.colors + ", " + newColor : newColor;
+                            setFormData({ ...formData, colors });
+                            input.value = "";
+                          }
+                        }
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const input = document.getElementById("color-input") as HTMLInputElement;
+                        if (input && input.value.trim()) {
+                          const newColor = input.value.trim();
+                          if (!formData.colors.includes(newColor)) {
+                            const colors = formData.colors ? formData.colors + ", " + newColor : newColor;
+                            setFormData({ ...formData, colors });
+                            input.value = "";
+                          }
+                        }
+                      }}
+                    >
+                      Add
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Press Enter or click Add to add colors</p>
+                </div>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4 pt-2">

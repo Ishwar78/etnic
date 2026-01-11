@@ -128,10 +128,10 @@ export default function UserDashboard() {
       <>
         <Header />
         <main className="min-h-screen bg-background pt-24 pb-16">
-          <div className="flex items-center justify-center">
+          <div className="container mx-auto px-4 flex items-center justify-center min-h-[600px]">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Loading dashboard...</p>
+              <p className="text-muted-foreground text-lg">Loading your dashboard...</p>
             </div>
           </div>
         </main>
@@ -140,8 +140,27 @@ export default function UserDashboard() {
     );
   }
 
+  // Redirect to login if not authenticated
   if (!user) {
-    return null;
+    return (
+      <>
+        <Header />
+        <main className="min-h-screen bg-background pt-24 pb-16">
+          <div className="container mx-auto px-4">
+            <div className="max-w-md mx-auto text-center py-16">
+              <h1 className="font-display text-2xl font-bold mb-4">Please Log In</h1>
+              <p className="text-muted-foreground mb-8">
+                You need to be logged in to view your dashboard.
+              </p>
+              <Button asChild>
+                <Link to="/auth">Go to Login</Link>
+              </Button>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
   }
 
   const renderContent = () => {
@@ -165,47 +184,54 @@ export default function UserDashboard() {
               </div>
             ) : (
               <div className="space-y-4">
-                {orders.map((order) => (
-                  <div
-                    key={order.id}
-                    className="bg-card rounded-xl shadow-card border border-border p-6 hover:border-primary/50 transition-colors"
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-                      <div>
-                        <div className="flex items-center gap-3 mb-1">
-                          <h3 className="font-semibold">Order #{order.id}</h3>
-                          <Badge variant="outline" className={statusColors[order.status]}>
-                            {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                          </Badge>
+                {orders.map((order) => {
+                  const orderId = order.id || order._id || "Unknown";
+                  return (
+                    <div
+                      key={order._id || order.id}
+                      className="bg-card rounded-xl shadow-card border border-border p-6 hover:border-primary/50 transition-colors"
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                        <div>
+                          <div className="flex items-center gap-3 mb-1">
+                            <h3 className="font-semibold">Order #{orderId}</h3>
+                            <Badge variant="outline" className={statusColors[order.status] || ""}>
+                              {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {format(new Date(order.createdAt), "MMM dd, yyyy")}
+                          </p>
                         </div>
-                        <p className="text-sm text-muted-foreground">
-                          {format(new Date(order.createdAt), "MMM dd, yyyy")}
-                        </p>
+                        <div className="text-right">
+                          <p className="text-xl font-bold text-primary">
+                            ₹{(order.total || order.totalAmount || 0).toLocaleString("en-IN")}
+                          </p>
+                          <p className="text-sm text-muted-foreground">{order.items?.length || 0} items</p>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="text-xl font-bold text-primary">
-                          ₹{order.total?.toLocaleString("en-IN") || "0"}
-                        </p>
-                        <p className="text-sm text-muted-foreground">{order.items?.length || 0} items</p>
-                      </div>
-                    </div>
 
-                    {order.items && order.items.length > 0 && (
-                      <div className="bg-muted/30 rounded-lg p-4">
-                        <div className="space-y-2">
-                          {order.items.map((item: any, index: number) => (
-                            <div key={index} className="flex justify-between text-sm">
-                              <span>{item.name} x {item.quantity}</span>
-                              <span className="text-muted-foreground">
-                                ₹{item.price?.toLocaleString("en-IN") || "0"}
-                              </span>
-                            </div>
-                          ))}
+                      {order.items && order.items.length > 0 && (
+                        <div className="bg-muted/30 rounded-lg p-4">
+                          <div className="space-y-2">
+                            {order.items.map((item: any, index: number) => (
+                              <div key={index} className="flex justify-between text-sm">
+                                <div>
+                                  <span>{item.name} x {item.quantity}</span>
+                                  {item.size && <span className="text-xs text-muted-foreground ml-2">(Size: {item.size})</span>}
+                                  {item.color && <span className="text-xs text-muted-foreground ml-2">(Color: {item.color})</span>}
+                                </div>
+                                <span className="text-muted-foreground">
+                                  ₹{item.price?.toLocaleString("en-IN") || "0"}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
