@@ -128,10 +128,10 @@ export default function UserDashboard() {
       <>
         <Header />
         <main className="min-h-screen bg-background pt-24 pb-16">
-          <div className="flex items-center justify-center">
+          <div className="container mx-auto px-4 flex items-center justify-center min-h-[600px]">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Loading dashboard...</p>
+              <p className="text-muted-foreground text-lg">Loading your dashboard...</p>
             </div>
           </div>
         </main>
@@ -140,8 +140,27 @@ export default function UserDashboard() {
     );
   }
 
+  // Redirect to login if not authenticated
   if (!user) {
-    return null;
+    return (
+      <>
+        <Header />
+        <main className="min-h-screen bg-background pt-24 pb-16">
+          <div className="container mx-auto px-4">
+            <div className="max-w-md mx-auto text-center py-16">
+              <h1 className="font-display text-2xl font-bold mb-4">Please Log In</h1>
+              <p className="text-muted-foreground mb-8">
+                You need to be logged in to view your dashboard.
+              </p>
+              <Button asChild>
+                <Link to="/auth">Go to Login</Link>
+              </Button>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
   }
 
   const renderContent = () => {
