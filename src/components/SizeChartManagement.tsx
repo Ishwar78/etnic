@@ -239,6 +239,9 @@ export default function SizeChartManagement() {
       const data = await response.json();
       setSizeChart(data.sizeChart);
 
+      // Refetch to ensure we have latest data
+      await fetchSizeChart();
+
       toast({
         title: "Success",
         description: "Size chart saved successfully",
