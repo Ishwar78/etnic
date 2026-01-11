@@ -24,12 +24,16 @@ export default function WesternWear() {
             originalPrice: p.originalPrice || p.price,
             discount: p.originalPrice ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : 0,
             image: p.image,
+            images: p.images || [p.image],
             category: "Western Wear",
             subcategory: p.subcategory || "Western Wear",
             sizes: p.sizes || [],
             colors: p.colors || [],
             isNew: p.isNew || false,
             isBestseller: p.isBestseller || false,
+            description: p.description || "",
+            stock: p.stock || 0,
+            isActive: p.isActive !== false,
           }));
           setWesternProducts(mapped);
         } else {
