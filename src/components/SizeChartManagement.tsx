@@ -156,6 +156,10 @@ export default function SizeChartManagement() {
           : s
       ));
       setEditingIndex(null);
+      toast({
+        title: "Success",
+        description: "Size updated successfully",
+      });
     } else {
       // Add new
       setSizes([
@@ -165,12 +169,17 @@ export default function SizeChartManagement() {
           measurements: formData.measurements.filter(m => m.name && m.value),
         },
       ]);
+      toast({
+        title: "Success",
+        description: "Size added successfully",
+      });
     }
 
     setFormData({
       sizeLabel: "",
       measurements: [{ name: "", value: "" }],
     });
+    setIsDialogOpen(false);
   };
 
   const handleEditSize = (index: number) => {
