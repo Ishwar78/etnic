@@ -15,24 +15,9 @@ export default function Bestsellers() {
         const response = await fetch(`${API_URL}/products`);
         if (response.ok) {
           const data = await response.json();
-          // Map API products to expected format
           const mapped = (data.products || [])
             .filter((p: any) => p.isBestseller)
-            .map((p: any) => ({
-              _id: p._id,
-              id: p._id,
-              name: p.name,
-              price: p.price,
-              originalPrice: p.originalPrice || p.price,
-              discount: p.originalPrice ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : 0,
-              image: p.image,
-              category: p.category === 'ethnic_wear' ? 'Ethnic Wear' : 'Western Wear',
-              subcategory: p.subcategory || "All",
-              sizes: p.sizes || [],
-              colors: p.colors || [],
-              isNew: p.isNew || false,
-              isBestseller: true,
-            }));
+            .map((p: any) => normalizeProduct(p));
           setBestsellers(mapped);
         } else {
           setBestsellers([]);
