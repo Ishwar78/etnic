@@ -470,10 +470,10 @@ export default function Checkout() {
 
                       <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 space-y-3">
                         <p className="text-sm text-foreground">
-                          After scanning and paying, enter your transaction ID below:
+                          After scanning and paying, you can optionally enter your transaction ID below:
                         </p>
                         <div className="space-y-2">
-                          <Label htmlFor="cod-transaction-id">Transaction ID / Payment Reference</Label>
+                          <Label htmlFor="cod-transaction-id">Transaction ID / Payment Reference <span className="text-muted-foreground text-xs">(Optional)</span></Label>
                           <Input
                             id="cod-transaction-id"
                             placeholder="Enter transaction ID after payment (e.g., TXN123456789)"
