@@ -140,7 +140,13 @@ export default function ProductDetail() {
   const fetchSizeChart = async () => {
     try {
       setIsSizeChartLoading(true);
-      const response = await fetch(`${API_URL}/size-charts?productId=${product?._id}`);
+      const productId = product?._id || product?.id;
+      if (!productId) {
+        setSizeChart(null);
+        return;
+      }
+
+      const response = await fetch(`${API_URL}/size-charts/product/${productId}`);
       if (response.ok) {
         const data = await response.json();
         setSizeChart(data.sizeChart || null);
