@@ -543,10 +543,10 @@ export default function Checkout() {
                           )}
                           <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 space-y-3">
                             <p className="text-sm text-foreground">
-                              After scanning and paying via UPI, enter your transaction ID below:
+                              After scanning and paying via UPI, you can optionally enter your transaction ID below:
                             </p>
                             <div className="space-y-2">
-                              <Label htmlFor="upi-transaction-id">Transaction ID / Reference</Label>
+                              <Label htmlFor="upi-transaction-id">Transaction ID / Reference <span className="text-muted-foreground text-xs">(Optional)</span></Label>
                               <Input
                                 id="upi-transaction-id"
                                 placeholder="Enter UPI transaction ID (e.g., UPI123456789)"
