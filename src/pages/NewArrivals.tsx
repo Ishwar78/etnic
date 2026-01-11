@@ -15,9 +15,10 @@ export default function NewArrivals() {
         setIsLoading(true);
         const response = await fetch(`${API_URL}/products`);
         const data = await response.json();
-        if (data.success) {
-          const filtered = data.products.filter((p: Product) => p.isNew);
-          setProducts(filtered);
+        if (data.success || data.products) {
+          const filtered = (data.products || []).filter((p: any) => p.isNew);
+          const mapped = filtered.map((p: any) => normalizeProduct(p));
+          setProducts(mapped);
         }
       } catch (error) {
         console.error('Error fetching products:', error);
