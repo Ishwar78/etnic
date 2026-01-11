@@ -1,4 +1,5 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import SizeChart from '../models/SizeChart.js';
 import { authMiddleware, adminMiddleware } from '../middleware/auth.js';
 
@@ -7,7 +8,13 @@ const router = express.Router();
 // Get size chart by product ID (public)
 router.get('/product/:productId', async (req, res) => {
   try {
-    const sizeChart = await SizeChart.findOne({ productId: req.params.productId });
+    const productId = req.params.productId;
+    // Convert string to ObjectId if valid
+    const query = mongoose.Types.ObjectId.isValid(productId)
+      ? { productId: new mongoose.Types.ObjectId(productId) }
+      : { productId };
+
+    const sizeChart = await SizeChart.findOne(query);
 
     if (!sizeChart) {
       return res.json({
@@ -30,8 +37,13 @@ router.get('/product/:productId', async (req, res) => {
 // Create or update size chart (admin only)
 router.post('/product/:productId', authMiddleware, adminMiddleware, async (req, res) => {
   try {
-    const { productId } = req.params;
+    const { productId: productIdParam } = req.params;
     const { sizes, unit } = req.body;
+
+    // Convert string to ObjectId if valid
+    const productId = mongoose.Types.ObjectId.isValid(productIdParam)
+      ? new mongoose.Types.ObjectId(productIdParam)
+      : productIdParam;
 
     let sizeChart = await SizeChart.findOne({ productId });
 
@@ -65,7 +77,13 @@ router.post('/product/:productId', authMiddleware, adminMiddleware, async (req, 
 // Delete size chart (admin only)
 router.delete('/product/:productId', authMiddleware, adminMiddleware, async (req, res) => {
   try {
-    const sizeChart = await SizeChart.findOneAndDelete({ productId: req.params.productId });
+    const productId = req.params.productId;
+    // Convert string to ObjectId if valid
+    const query = mongoose.Types.ObjectId.isValid(productId)
+      ? { productId: new mongoose.Types.ObjectId(productId) }
+      : { productId };
+
+    const sizeChart = await SizeChart.findOneAndDelete(query);
 
     if (!sizeChart) {
       return res.status(404).json({ error: 'Size chart not found' });

@@ -8,6 +8,7 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
+import { normalizeProduct } from "@/lib/normalizeProduct";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -70,20 +71,7 @@ export default function Shop() {
         const response = await fetch(`${API_URL}/products`);
         if (response.ok) {
           const data = await response.json();
-          const mappedProducts = (data.products || []).map((p: any) => ({
-            _id: p._id,
-            id: p._id,
-            name: p.name,
-            price: p.price,
-            originalPrice: p.originalPrice || p.price,
-            discount: p.originalPrice ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : 0,
-            image: p.image,
-            category: p.category === 'ethnic_wear' ? 'Ethnic Wear' : 'Western Wear',
-            sizes: p.sizes || [],
-            colors: p.colors || [],
-            isNew: p.isNew || false,
-            isBestseller: p.isBestseller || false,
-          }));
+          const mappedProducts = (data.products || []).map((p: any) => normalizeProduct(p));
           setProducts(mappedProducts);
         } else {
           console.error('Failed to fetch products');

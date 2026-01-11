@@ -239,6 +239,9 @@ export default function SizeChartManagement() {
       const data = await response.json();
       setSizeChart(data.sizeChart);
 
+      // Refetch to ensure we have latest data
+      await fetchSizeChart();
+
       toast({
         title: "Success",
         description: "Size chart saved successfully",
@@ -329,44 +332,54 @@ export default function SizeChartManagement() {
               ) : (
                 <div className="space-y-4">
                   {sizes.length > 0 && (
-                    <div className="space-y-2">
-                      <h3 className="font-semibold">Sizes</h3>
-                      <div className="space-y-2">
-                        {sizes.map((size, index) => (
-                          <Card key={index} className="bg-muted/30">
-                            <CardContent className="pt-4">
-                              <div className="flex items-start justify-between gap-4">
-                                <div className="flex-1 space-y-2">
-                                  <h4 className="font-medium">{size.label}</h4>
-                                  <div className="grid grid-cols-2 gap-2">
-                                    {size.measurements.map((measurement, mIndex) => (
-                                      <div key={mIndex} className="text-sm">
-                                        <p className="text-muted-foreground">{measurement.name}</p>
-                                        <p className="font-medium">{measurement.value} {unit}</p>
-                                      </div>
-                                    ))}
+                    <div className="space-y-3">
+                      <h3 className="font-semibold text-lg">Size Chart</h3>
+                      <div className="border rounded-lg overflow-hidden">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="bg-muted border-b">
+                              <th className="px-4 py-3 text-left font-semibold">Size</th>
+                              {sizes[0]?.measurements && sizes[0].measurements.map((_, mIndex) => (
+                                <th key={mIndex} className="px-4 py-3 text-left font-semibold">
+                                  {sizes[0].measurements[mIndex].name}
+                                </th>
+                              ))}
+                              <th className="px-4 py-3 text-left font-semibold w-24">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {sizes.map((size, index) => (
+                              <tr key={index} className="border-b hover:bg-muted/50 transition-colors">
+                                <td className="px-4 py-3 font-medium">{size.label}</td>
+                                {size.measurements.map((measurement, mIndex) => (
+                                  <td key={mIndex} className="px-4 py-3">
+                                    {measurement.value} {unit}
+                                  </td>
+                                ))}
+                                <td className="px-4 py-3">
+                                  <div className="flex gap-1">
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => handleEditSize(index)}
+                                      className="h-8 w-8 p-0"
+                                    >
+                                      <Edit2 className="h-3.5 w-3.5" />
+                                    </Button>
+                                    <Button
+                                      variant="destructive"
+                                      size="sm"
+                                      onClick={() => handleDeleteSize(index)}
+                                      className="h-8 w-8 p-0"
+                                    >
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                    </Button>
                                   </div>
-                                </div>
-                                <div className="flex gap-2">
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => handleEditSize(index)}
-                                  >
-                                    <Edit2 className="h-4 w-4" />
-                                  </Button>
-                                  <Button
-                                    variant="destructive"
-                                    size="sm"
-                                    onClick={() => handleDeleteSize(index)}
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        ))}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                       </div>
                     </div>
                   )}

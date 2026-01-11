@@ -22,6 +22,8 @@ export interface Product {
   stock?: number;
   isActive?: boolean;
   createdAt?: string;
+  rating?: number;
+  reviews?: any[];
 }
 
 export const categories = ["All", "Ethnic Wear", "Western Wear"];
