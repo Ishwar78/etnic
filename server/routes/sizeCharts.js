@@ -77,7 +77,13 @@ router.post('/product/:productId', authMiddleware, adminMiddleware, async (req, 
 // Delete size chart (admin only)
 router.delete('/product/:productId', authMiddleware, adminMiddleware, async (req, res) => {
   try {
-    const sizeChart = await SizeChart.findOneAndDelete({ productId: req.params.productId });
+    const productId = req.params.productId;
+    // Convert string to ObjectId if valid
+    const query = mongoose.Types.ObjectId.isValid(productId)
+      ? { productId: new mongoose.Types.ObjectId(productId) }
+      : { productId };
+
+    const sizeChart = await SizeChart.findOneAndDelete(query);
 
     if (!sizeChart) {
       return res.status(404).json({ error: 'Size chart not found' });
