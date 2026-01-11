@@ -19,12 +19,12 @@ export interface Review {
   rating: number;
   comment: string;
   date: string;
-  productId: number;
+  productId: string | number;
   images?: string[];
 }
 
 interface ReviewFormProps {
-  productId: number;
+  productId: string | number;
   onReviewSubmitted: (review: Review) => void;
 }
 
