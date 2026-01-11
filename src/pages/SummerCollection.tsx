@@ -15,24 +15,9 @@ export default function SummerCollection() {
         const response = await fetch(`${API_URL}/products`);
         if (response.ok) {
           const data = await response.json();
-          // Map and filter API products for summer collection
           const mapped = (data.products || [])
             .filter((p: any) => p.isSummer)
-            .map((p: any) => ({
-              _id: p._id,
-              id: p._id,
-              name: p.name,
-              price: p.price,
-              originalPrice: p.originalPrice || p.price,
-              discount: p.originalPrice ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : 0,
-              image: p.image,
-              category: p.category === 'ethnic_wear' ? 'Ethnic Wear' : 'Western Wear',
-              subcategory: p.subcategory || "All",
-              sizes: p.sizes || [],
-              colors: p.colors || [],
-              isNew: p.isNew || false,
-              isBestseller: p.isBestseller || false,
-            }));
+            .map((p: any) => normalizeProduct(p));
           setSummerProducts(mapped);
         } else {
           setSummerProducts([]);
