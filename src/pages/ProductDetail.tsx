@@ -117,8 +117,8 @@ export default function ProductDetail() {
   // Load reviews on mount
   useEffect(() => {
     if (product) {
-      const productId = typeof product.id === 'string' ? parseInt(product.id) : (product._id || product.id);
-      const storedReviews = getStoredReviews(productId);
+      const productId = product._id || product.id;
+      const storedReviews = getStoredReviews(productId as any);
       setReviews(storedReviews);
     }
   }, [product]);
@@ -567,7 +567,7 @@ export default function ProductDetail() {
                   {/* Reviews List & Form */}
                   <div className="lg:col-span-2 space-y-8">
                     {/* Review Form */}
-                    <ReviewForm productId={productId} onReviewSubmitted={handleReviewSubmitted} />
+                    <ReviewForm productId={product._id || product.id || '0'} onReviewSubmitted={handleReviewSubmitted} />
 
                     {/* Reviews List */}
                     <div className="space-y-6">
