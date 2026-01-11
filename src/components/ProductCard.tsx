@@ -124,7 +124,7 @@ export default function ProductCard({ product, index = 0, showTrending = false }
 
           <div className="p-4">
             <span className="text-xs text-muted-foreground uppercase tracking-wider">{product.category}</span>
-            <Link to={`/product/${product.id}`}>
+            <Link to={`/product/${productId}`}>
               <h3 className="font-display text-lg font-semibold text-foreground mt-1 group-hover:text-primary transition-colors line-clamp-1">
                 {product.name}
               </h3>
