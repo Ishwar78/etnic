@@ -1,4 +1,5 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import SizeChart from '../models/SizeChart.js';
 import { authMiddleware, adminMiddleware } from '../middleware/auth.js';
 
@@ -7,7 +8,13 @@ const router = express.Router();
 // Get size chart by product ID (public)
 router.get('/product/:productId', async (req, res) => {
   try {
-    const sizeChart = await SizeChart.findOne({ productId: req.params.productId });
+    const productId = req.params.productId;
+    // Convert string to ObjectId if valid
+    const query = mongoose.Types.ObjectId.isValid(productId)
+      ? { productId: new mongoose.Types.ObjectId(productId) }
+      : { productId };
+
+    const sizeChart = await SizeChart.findOne(query);
 
     if (!sizeChart) {
       return res.json({
