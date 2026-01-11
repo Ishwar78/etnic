@@ -37,8 +37,13 @@ router.get('/product/:productId', async (req, res) => {
 // Create or update size chart (admin only)
 router.post('/product/:productId', authMiddleware, adminMiddleware, async (req, res) => {
   try {
-    const { productId } = req.params;
+    const { productId: productIdParam } = req.params;
     const { sizes, unit } = req.body;
+
+    // Convert string to ObjectId if valid
+    const productId = mongoose.Types.ObjectId.isValid(productIdParam)
+      ? new mongoose.Types.ObjectId(productIdParam)
+      : productIdParam;
 
     let sizeChart = await SizeChart.findOne({ productId });
 
