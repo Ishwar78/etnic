@@ -411,6 +411,32 @@ export default function ProductDetail() {
                   </div>
                 )}
 
+                {/* Color Selector */}
+                {product.colors && product.colors.length > 0 && (
+                  <div>
+                    <h3 className="font-medium mb-3">Available Colors</h3>
+                    <div className="flex flex-wrap gap-3">
+                      {product.colors.map((color) => (
+                        <div
+                          key={color}
+                          className="flex flex-col items-center gap-2"
+                        >
+                          <div
+                            className="h-10 w-10 rounded-full border-2 border-border hover:border-primary transition-colors cursor-pointer"
+                            title={color}
+                            style={{
+                              backgroundColor: getColorHex(color) || '#cccccc',
+                            }}
+                          />
+                          <span className="text-xs text-muted-foreground text-center max-w-[60px] truncate">
+                            {color}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Quantity */}
                 <div>
                   <h3 className="font-medium mb-3">Quantity</h3>
