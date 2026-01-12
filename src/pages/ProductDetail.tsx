@@ -73,6 +73,7 @@ export default function ProductDetail() {
   const [isProductLoading, setIsProductLoading] = useState(true);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [isSizeChartOpen, setIsSizeChartOpen] = useState(false);
