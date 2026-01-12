@@ -677,23 +677,54 @@ export default function AdminDashboard() {
                   {selectedOrder.shippingAddress && (
                     <div>
                       <h3 className="font-semibold text-foreground mb-3">Shipping Address</h3>
-                      <div className="space-y-2 text-sm">
-                        {selectedOrder.shippingAddress.name && (
-                          <p className="font-medium">{selectedOrder.shippingAddress.name}</p>
+                      <div className="space-y-3 text-sm bg-muted/20 rounded-lg p-3">
+                        {(selectedOrder.shippingAddress.name || (selectedOrder.shippingAddress.firstName && selectedOrder.shippingAddress.lastName)) && (
+                          <div>
+                            <p className="text-muted-foreground text-xs font-medium">Full Name</p>
+                            <p className="font-medium">
+                              {selectedOrder.shippingAddress.name || `${selectedOrder.shippingAddress.firstName || ''} ${selectedOrder.shippingAddress.lastName || ''}`.trim()}
+                            </p>
+                          </div>
                         )}
-                        {selectedOrder.shippingAddress.street && (
-                          <p className="text-muted-foreground">{selectedOrder.shippingAddress.street}</p>
+                        {(selectedOrder.shippingAddress.street || selectedOrder.shippingAddress.address) && (
+                          <div>
+                            <p className="text-muted-foreground text-xs font-medium">Address</p>
+                            <p className="text-foreground">{selectedOrder.shippingAddress.street || selectedOrder.shippingAddress.address}</p>
+                          </div>
                         )}
-                        <p className="text-muted-foreground">
-                          {selectedOrder.shippingAddress.city && `${selectedOrder.shippingAddress.city}, `}
-                          {selectedOrder.shippingAddress.state && `${selectedOrder.shippingAddress.state} `}
-                          {selectedOrder.shippingAddress.zipCode}
-                        </p>
-                        {selectedOrder.shippingAddress.country && (
-                          <p className="text-muted-foreground">{selectedOrder.shippingAddress.country}</p>
+                        {(selectedOrder.shippingAddress.city || selectedOrder.shippingAddress.state || selectedOrder.shippingAddress.zipCode || selectedOrder.shippingAddress.pincode) && (
+                          <div className="grid grid-cols-2 gap-3">
+                            {selectedOrder.shippingAddress.city && (
+                              <div>
+                                <p className="text-muted-foreground text-xs font-medium">City</p>
+                                <p className="text-foreground">{selectedOrder.shippingAddress.city}</p>
+                              </div>
+                            )}
+                            {selectedOrder.shippingAddress.state && (
+                              <div>
+                                <p className="text-muted-foreground text-xs font-medium">State</p>
+                                <p className="text-foreground">{selectedOrder.shippingAddress.state}</p>
+                              </div>
+                            )}
+                            {(selectedOrder.shippingAddress.zipCode || selectedOrder.shippingAddress.pincode) && (
+                              <div>
+                                <p className="text-muted-foreground text-xs font-medium">PIN Code</p>
+                                <p className="text-foreground">{selectedOrder.shippingAddress.zipCode || selectedOrder.shippingAddress.pincode}</p>
+                              </div>
+                            )}
+                            {selectedOrder.shippingAddress.country && (
+                              <div>
+                                <p className="text-muted-foreground text-xs font-medium">Country</p>
+                                <p className="text-foreground">{selectedOrder.shippingAddress.country}</p>
+                              </div>
+                            )}
+                          </div>
                         )}
                         {selectedOrder.shippingAddress.phone && (
-                          <p className="text-muted-foreground">Phone: {selectedOrder.shippingAddress.phone}</p>
+                          <div>
+                            <p className="text-muted-foreground text-xs font-medium">Phone</p>
+                            <p className="text-foreground">{selectedOrder.shippingAddress.phone}</p>
+                          </div>
                         )}
                       </div>
                     </div>
