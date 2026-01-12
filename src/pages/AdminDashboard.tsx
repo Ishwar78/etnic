@@ -252,6 +252,49 @@ export default function AdminDashboard() {
     }
   };
 
+  const updateOrderStatus = async (orderId: string, status: string) => {
+    try {
+      setUpdatingOrderId(orderId);
+      const response = await fetch(`${API_URL}/admin/orders/${orderId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        toast({
+          title: 'Success',
+          description: `Order status updated to ${status}`,
+        });
+        // Update the selected order
+        if (selectedOrder && selectedOrder._id === orderId) {
+          setSelectedOrder({ ...selectedOrder, status });
+        }
+        // Refresh orders
+        fetchOrders();
+      } else {
+        toast({
+          title: 'Error',
+          description: data.error || 'Failed to update order status',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      console.error('Error updating order status:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to update order status',
+        variant: 'destructive',
+      });
+    } finally {
+      setUpdatingOrderId(null);
+    }
+  };
+
   // Show loading state while checking auth
   if (authLoading) {
     return (
