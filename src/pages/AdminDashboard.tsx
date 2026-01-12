@@ -650,6 +650,7 @@ export default function AdminDashboard() {
                       <thead className="bg-muted">
                         <tr>
                           <th className="px-4 py-2 text-left text-xs font-medium text-foreground">Product</th>
+                          <th className="px-4 py-2 text-left text-xs font-medium text-foreground">Category</th>
                           <th className="px-4 py-2 text-left text-xs font-medium text-foreground">Price</th>
                           <th className="px-4 py-2 text-left text-xs font-medium text-foreground">Qty</th>
                           <th className="px-4 py-2 text-left text-xs font-medium text-foreground">Size</th>
@@ -661,10 +662,32 @@ export default function AdminDashboard() {
                         {selectedOrder.items?.map((item: any, index: number) => (
                           <tr key={index} className="hover:bg-muted/30">
                             <td className="px-4 py-3 text-sm text-foreground">{item.name}</td>
+                            <td className="px-4 py-3 text-sm">
+                              {item.category ? (
+                                <span className="px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                  {item.category.replace(/_/g, ' ')}
+                                </span>
+                              ) : (
+                                <span className="text-xs text-muted-foreground">-</span>
+                              )}
+                            </td>
                             <td className="px-4 py-3 text-sm text-foreground">₹{item.price?.toLocaleString()}</td>
                             <td className="px-4 py-3 text-sm text-foreground">{item.quantity}</td>
                             <td className="px-4 py-3 text-sm text-muted-foreground">{item.size || '-'}</td>
-                            <td className="px-4 py-3 text-sm text-muted-foreground">{item.color || '-'}</td>
+                            <td className="px-4 py-3 text-sm">
+                              {item.color ? (
+                                <div className="flex items-center gap-2">
+                                  <div
+                                    className="w-5 h-5 rounded border border-border"
+                                    style={{backgroundColor: getColorHex(item.color)}}
+                                    title={item.color}
+                                  />
+                                  <span className="text-muted-foreground">{item.color}</span>
+                                </div>
+                              ) : (
+                                <span className="text-muted-foreground">-</span>
+                              )}
+                            </td>
                             <td className="px-4 py-3 text-sm text-right text-foreground font-medium">
                               ₹{((item.price || 0) * (item.quantity || 0)).toLocaleString()}
                             </td>
