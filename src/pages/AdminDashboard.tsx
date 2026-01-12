@@ -314,9 +314,8 @@ export default function AdminDashboard() {
   const currentTab = searchParams.get('tab') || 'overview';
 
   const handleTabChange = (value: string) => {
-    // Update URL with new tab
-    const newUrl = `/admin?tab=${value}`;
-    window.history.pushState({}, '', newUrl);
+    // Update URL with new tab using navigate
+    navigate(`/admin?tab=${value}`, { replace: false });
 
     // Fetch data for specific tabs
     if (value === 'users') fetchUsers();
