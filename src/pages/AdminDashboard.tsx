@@ -311,7 +311,17 @@ export default function AdminDashboard() {
     return null;
   }
 
-  const defaultTab = searchParams.get('tab') || 'overview';
+  const currentTab = searchParams.get('tab') || 'overview';
+
+  const handleTabChange = (value: string) => {
+    // Update URL with new tab
+    const newUrl = `/admin?tab=${value}`;
+    window.history.pushState({}, '', newUrl);
+
+    // Fetch data for specific tabs
+    if (value === 'users') fetchUsers();
+    if (value === 'orders') fetchOrders();
+  };
 
   return (
     <>
@@ -329,10 +339,7 @@ export default function AdminDashboard() {
             <p className="text-muted-foreground">Manage users, orders, and view statistics</p>
           </div>
 
-          <Tabs defaultValue={defaultTab} className="space-y-6" onValueChange={(value) => {
-            if (value === 'users') fetchUsers();
-            if (value === 'orders') fetchOrders();
-          }}>
+          <Tabs value={currentTab} className="space-y-6" onValueChange={handleTabChange}>
             <TabsList className="flex flex-wrap gap-1">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="hero-media">Hero Slider</TabsTrigger>
