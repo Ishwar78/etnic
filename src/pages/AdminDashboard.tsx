@@ -692,6 +692,12 @@ export default function AdminDashboard() {
                             </p>
                           </div>
                         )}
+                        {selectedOrder.shippingAddress.phone && (
+                          <div className="bg-primary/5 border border-primary/20 rounded p-2">
+                            <p className="text-muted-foreground text-xs font-medium mb-1">Mobile No</p>
+                            <p className="font-semibold text-foreground">{selectedOrder.shippingAddress.phone}</p>
+                          </div>
+                        )}
                         {(selectedOrder.shippingAddress.street || selectedOrder.shippingAddress.address) && (
                           <div>
                             <p className="text-muted-foreground text-xs font-medium">Address</p>
@@ -724,12 +730,6 @@ export default function AdminDashboard() {
                                 <p className="text-foreground">{selectedOrder.shippingAddress.country}</p>
                               </div>
                             )}
-                          </div>
-                        )}
-                        {selectedOrder.shippingAddress.phone && (
-                          <div>
-                            <p className="text-muted-foreground text-xs font-medium">Phone</p>
-                            <p className="text-foreground">{selectedOrder.shippingAddress.phone}</p>
                           </div>
                         )}
                       </div>
