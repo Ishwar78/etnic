@@ -592,7 +592,14 @@ export default function Checkout() {
                           </span>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium line-clamp-2">{item.name}</p>
+                          <div className="flex items-start justify-between gap-2">
+                            <p className="text-sm font-medium line-clamp-2">{item.name}</p>
+                            {item.category && (
+                              <Badge variant="outline" className="flex-shrink-0 text-xs">
+                                {item.category.replace(/_/g, ' ')}
+                              </Badge>
+                            )}
+                          </div>
                           {item.size && (
                             <p className="text-xs text-muted-foreground">Size: {item.size}</p>
                           )}
