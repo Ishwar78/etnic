@@ -145,7 +145,6 @@ export default function Checkout() {
       setIsProcessing(false);
       setOrderComplete(true);
       clearCart();
-      setCodTransactionId("");
       setUpiTransactionId("");
       toast.success("Order placed successfully!");
     } catch (error) {
