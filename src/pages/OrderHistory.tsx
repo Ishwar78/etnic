@@ -18,7 +18,7 @@ const statusColors = {
 };
 
 export default function OrderHistory() {
-  const { orders } = useOrders();
+  const { orders, isLoading } = useOrders();
   const { user, isLoading: authLoading } = useAuth();
 
   // Show loading state while checking auth
@@ -86,14 +86,19 @@ export default function OrderHistory() {
         <div className="container mx-auto px-4">
           <h1 className="font-display text-3xl md:text-4xl font-bold mb-8">Order History</h1>
 
-          {orders.length === 0 ? (
+          {isLoading ? (
+            <div className="max-w-md mx-auto text-center py-16">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading your orders...</p>
+            </div>
+          ) : orders.length === 0 ? (
             <div className="max-w-md mx-auto text-center py-16">
               <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
                 <ShoppingBag className="h-10 w-10 text-muted-foreground" />
               </div>
-              <h2 className="font-display text-xl font-semibold mb-4">No orders yet</h2>
+              <h2 className="font-display text-xl font-semibold mb-4">You have not placed any orders yet</h2>
               <p className="text-muted-foreground mb-6">
-                When you place orders, they'll appear here.
+                Once you place an order, it will appear here.
               </p>
               <Button asChild>
                 <Link to="/shop">Start Shopping</Link>
@@ -101,82 +106,110 @@ export default function OrderHistory() {
             </div>
           ) : (
             <div className="space-y-6">
-              {orders.map((order) => (
-                <div
-                  key={order.id}
-                  className="bg-card border border-border rounded-xl p-6"
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                    <div>
-                      <div className="flex items-center gap-3 mb-1">
-                        <h3 className="font-display text-lg font-semibold">
-                          Order #{order.id}
-                        </h3>
-                        <Badge
-                          variant="outline"
-                          className={statusColors[order.status]}
-                        >
-                          {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        Placed on {format(new Date(order.createdAt), "MMMM d, yyyy 'at' h:mm a")}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-muted-foreground">Total</p>
-                      <p className="font-display text-xl font-bold text-primary">
-                        ₹{order.total.toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
+              {orders.map((order) => {
+                const orderId = order._id || order.id;
+                const totalAmount = order.totalAmount || order.total;
+                const paymentMethodDisplay = order.paymentMethod
+                  ? order.paymentMethod.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+                  : 'Not specified';
 
-                  <div className="grid gap-4">
-                    {order.items.map((item, index) => (
-                      <div
-                        key={`${item.id}-${item.size}-${index}`}
-                        className="flex gap-4 p-3 bg-muted/50 rounded-lg"
-                      >
-                        <div className="w-16 h-20 rounded-md overflow-hidden bg-muted flex-shrink-0">
-                          <img
-                            src={item.image}
-                            alt={item.name}
-                            className="w-full h-full object-cover"
-                          />
+                return (
+                  <div
+                    key={orderId}
+                    className="bg-card border border-border rounded-xl p-6"
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                      <div>
+                        <div className="flex items-center gap-3 mb-1">
+                          <h3 className="font-display text-lg font-semibold">
+                            Order #{orderId.toString().slice(-8).toUpperCase()}
+                          </h3>
+                          <Badge
+                            variant="outline"
+                            className={statusColors[order.status] || "bg-gray-500/10 text-gray-600 border-gray-500/20"}
+                          >
+                            {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                          </Badge>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between gap-2 mb-1">
-                            <p className="font-medium line-clamp-1">{item.name}</p>
-                            {item.category && (
-                              <Badge variant="secondary" className="flex-shrink-0 text-xs">
-                                {item.category.replace(/_/g, ' ')}
-                              </Badge>
-                            )}
+                        <p className="text-sm text-muted-foreground">
+                          Placed on {format(new Date(order.createdAt), "MMMM d, yyyy 'at' h:mm a")}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm text-muted-foreground">Total</p>
+                        <p className="font-display text-xl font-bold text-primary">
+                          ₹{totalAmount.toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="grid gap-4">
+                      {order.items.map((item, index) => (
+                        <div
+                          key={`${orderId}-${item.name}-${index}`}
+                          className="flex gap-4 p-3 bg-muted/50 rounded-lg"
+                        >
+                          <div className="w-16 h-20 rounded-md overflow-hidden bg-muted flex-shrink-0">
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="w-full h-full object-cover"
+                            />
                           </div>
-                          {item.size && (
-                            <p className="text-sm text-muted-foreground">Size: {item.size}</p>
-                          )}
-                          <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
-                          <p className="text-sm font-semibold text-primary mt-1">
-                            ₹{(item.price * item.quantity).toLocaleString()}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-2 mb-1">
+                              <p className="font-medium line-clamp-1">{item.name}</p>
+                              {item.category && (
+                                <Badge variant="secondary" className="flex-shrink-0 text-xs">
+                                  {item.category.replace(/_/g, ' ')}
+                                </Badge>
+                              )}
+                            </div>
+                            {item.size && (
+                              <p className="text-sm text-muted-foreground">Size: {item.size}</p>
+                            )}
+                            <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
+                            <p className="text-sm font-semibold text-primary mt-1">
+                              ₹{(item.price * item.quantity).toLocaleString()}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="mt-4 pt-4 border-t border-border">
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                          <p className="text-sm text-muted-foreground mb-1">Payment Method</p>
+                          <p className="text-sm font-medium">{paymentMethodDisplay}</p>
+                        </div>
+                        {order.shippingAddress && (
+                          <div>
+                            <p className="text-sm text-muted-foreground mb-1">Shipping to</p>
+                            <p className="text-sm font-medium">{order.shippingAddress.city}</p>
+                          </div>
+                        )}
+                      </div>
+
+                      {order.shippingAddress && (
+                        <div className="mb-4 p-3 bg-muted/50 rounded-lg">
+                          <p className="text-sm font-medium mb-2">Full Address</p>
+                          <p className="text-sm text-muted-foreground">
+                            {order.shippingAddress.name},{" "}
+                            {order.shippingAddress.street || order.shippingAddress.address},{" "}
+                            {order.shippingAddress.city},{" "}
+                            {order.shippingAddress.state} - {order.shippingAddress.zipCode}
                           </p>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      )}
 
-                  {order.shippingAddress && (
-                    <div className="mt-4 pt-4 border-t border-border">
-                      <p className="text-sm text-muted-foreground mb-1">Shipping to:</p>
-                      <p className="text-sm">
-                        {order.shippingAddress.firstName} {order.shippingAddress.lastName},{" "}
-                        {order.shippingAddress.address}, {order.shippingAddress.city},{" "}
-                        {order.shippingAddress.state} - {order.shippingAddress.pincode}
-                      </p>
+                      <Button className="w-full sm:w-auto">
+                        View Order Details
+                      </Button>
                     </div>
-                  )}
-                </div>
-              ))}
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
