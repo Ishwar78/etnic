@@ -213,6 +213,12 @@ export default function ProductDetail() {
   const handleAddToCart = () => {
     if (!product) return;
 
+    // Check if color is required and selected
+    if (product.colors && product.colors.length > 0 && !selectedColor) {
+      toast.error("Please select a color");
+      return;
+    }
+
     addToCart(
       {
         id: product._id || product.id,
@@ -221,6 +227,7 @@ export default function ProductDetail() {
         originalPrice: product.originalPrice,
         image: product.image,
         size: selectedSize || undefined,
+        color: selectedColor || undefined,
         category: product.category,
       },
       quantity
