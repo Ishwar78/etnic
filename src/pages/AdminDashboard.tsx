@@ -311,7 +311,16 @@ export default function AdminDashboard() {
     return null;
   }
 
-  const defaultTab = searchParams.get('tab') || 'overview';
+  const currentTab = searchParams.get('tab') || 'overview';
+
+  const handleTabChange = (value: string) => {
+    // Update URL with new tab using navigate
+    navigate(`/admin?tab=${value}`, { replace: false });
+
+    // Fetch data for specific tabs
+    if (value === 'users') fetchUsers();
+    if (value === 'orders') fetchOrders();
+  };
 
   return (
     <>
@@ -329,10 +338,7 @@ export default function AdminDashboard() {
             <p className="text-muted-foreground">Manage users, orders, and view statistics</p>
           </div>
 
-          <Tabs defaultValue={defaultTab} className="space-y-6" onValueChange={(value) => {
-            if (value === 'users') fetchUsers();
-            if (value === 'orders') fetchOrders();
-          }}>
+          <Tabs value={currentTab} className="space-y-6" onValueChange={handleTabChange}>
             <TabsList className="flex flex-wrap gap-1">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="hero-media">Hero Slider</TabsTrigger>
@@ -686,6 +692,12 @@ export default function AdminDashboard() {
                             </p>
                           </div>
                         )}
+                        {selectedOrder.shippingAddress.phone && (
+                          <div className="bg-primary/5 border border-primary/20 rounded p-2">
+                            <p className="text-muted-foreground text-xs font-medium mb-1">Mobile No</p>
+                            <p className="font-semibold text-foreground">{selectedOrder.shippingAddress.phone}</p>
+                          </div>
+                        )}
                         {(selectedOrder.shippingAddress.street || selectedOrder.shippingAddress.address) && (
                           <div>
                             <p className="text-muted-foreground text-xs font-medium">Address</p>
@@ -718,12 +730,6 @@ export default function AdminDashboard() {
                                 <p className="text-foreground">{selectedOrder.shippingAddress.country}</p>
                               </div>
                             )}
-                          </div>
-                        )}
-                        {selectedOrder.shippingAddress.phone && (
-                          <div>
-                            <p className="text-muted-foreground text-xs font-medium">Phone</p>
-                            <p className="text-foreground">{selectedOrder.shippingAddress.phone}</p>
                           </div>
                         )}
                       </div>
