@@ -145,7 +145,14 @@ export default function OrderHistory() {
                           />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium line-clamp-1">{item.name}</p>
+                          <div className="flex items-start justify-between gap-2 mb-1">
+                            <p className="font-medium line-clamp-1">{item.name}</p>
+                            {item.category && (
+                              <Badge variant="secondary" className="flex-shrink-0 text-xs">
+                                {item.category.replace(/_/g, ' ')}
+                              </Badge>
+                            )}
+                          </div>
                           {item.size && (
                             <p className="text-sm text-muted-foreground">Size: {item.size}</p>
                           )}
