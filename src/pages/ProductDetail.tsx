@@ -459,21 +459,32 @@ export default function ProductDetail() {
                     <h3 className="font-medium mb-3">Available Colors</h3>
                     <div className="flex flex-wrap gap-3">
                       {product.colors.map((color) => (
-                        <div
+                        <button
                           key={color}
-                          className="flex flex-col items-center gap-2"
+                          onClick={() => setSelectedColor(color)}
+                          className="flex flex-col items-center gap-2 group transition-all"
+                          title={color}
                         >
                           <div
-                            className="h-10 w-10 rounded-full border-2 border-border hover:border-primary transition-colors cursor-pointer"
-                            title={color}
+                            className={cn(
+                              "h-12 w-12 rounded-full border-2 transition-all",
+                              selectedColor === color
+                                ? "border-primary ring-2 ring-primary ring-offset-2 scale-110"
+                                : "border-border group-hover:border-primary"
+                            )}
                             style={{
                               backgroundColor: getColorHex(color) || '#cccccc',
                             }}
                           />
-                          <span className="text-xs text-muted-foreground text-center max-w-[60px] truncate">
+                          <span className={cn(
+                            "text-xs text-center max-w-[60px] truncate font-medium transition-colors",
+                            selectedColor === color
+                              ? "text-primary"
+                              : "text-muted-foreground group-hover:text-foreground"
+                          )}>
                             {color}
                           </span>
-                        </div>
+                        </button>
                       ))}
                     </div>
                   </div>
