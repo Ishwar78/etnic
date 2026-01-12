@@ -345,9 +345,6 @@ export default function Checkout() {
                   <h2 className="font-display text-xl font-semibold mb-6">Payment Method</h2>
                   <RadioGroup value={paymentMethod} onValueChange={(value) => {
                     setPaymentMethod(value);
-                    if (value !== "cod") {
-                      setCodTransactionId("");
-                    }
                     if (value !== "upi") {
                       setUpiTransactionId("");
                     }
