@@ -128,8 +128,8 @@ export default function Checkout() {
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       // Create order on backend
-      const paymentDetails = paymentMethod === "cod" ? { transactionId: codTransactionId } :
-                            paymentMethod === "upi" ? { transactionId: upiTransactionId } :
+      // Transaction ID is only for UPI payments (optional)
+      const paymentDetails = paymentMethod === "upi" ? { transactionId: upiTransactionId || undefined } :
                             undefined;
 
       const newOrderId = await addOrder({
