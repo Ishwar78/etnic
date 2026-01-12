@@ -795,10 +795,56 @@ export default function AdminDashboard() {
                     <p className="text-sm text-muted-foreground">{selectedOrder.notes}</p>
                   </div>
                 )}
+
+                {/* Order Status Update */}
+                <div className="bg-muted/30 rounded-lg p-4">
+                  <h3 className="font-semibold text-foreground mb-3">Update Order Status</h3>
+                  <div className="flex gap-3 items-end">
+                    <div className="flex-1">
+                      <Label className="text-foreground mb-2 block">New Status</Label>
+                      <Select
+                        value={newOrderStatus || selectedOrder.status}
+                        onValueChange={setNewOrderStatus}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pending">Pending</SelectItem>
+                          <SelectItem value="confirmed">Confirmed</SelectItem>
+                          <SelectItem value="processing">Processing</SelectItem>
+                          <SelectItem value="shipped">Shipped</SelectItem>
+                          <SelectItem value="delivered">Delivered</SelectItem>
+                          <SelectItem value="cancelled">Cancelled</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <Button
+                      onClick={() => {
+                        if (newOrderStatus && newOrderStatus !== selectedOrder.status) {
+                          updateOrderStatus(selectedOrder._id, newOrderStatus);
+                        }
+                      }}
+                      disabled={!newOrderStatus || newOrderStatus === selectedOrder.status || updatingOrderId === selectedOrder._id}
+                    >
+                      {updatingOrderId === selectedOrder._id ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Updating...
+                        </>
+                      ) : (
+                        'Update'
+                      )}
+                    </Button>
+                  </div>
+                </div>
               </div>
 
               <DialogFooter>
-                <Button variant="outline" onClick={() => setSelectedOrder(null)}>
+                <Button variant="outline" onClick={() => {
+                  setSelectedOrder(null);
+                  setNewOrderStatus(null);
+                }}>
                   Close
                 </Button>
               </DialogFooter>
