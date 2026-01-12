@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { useOrders } from "@/contexts/OrderContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { format } from "date-fns";
+import { Separator } from "@/components/ui/separator";
 
 const statusColors = {
   confirmed: "bg-blue-500/10 text-blue-600 border-blue-500/20",
