@@ -9,8 +9,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Users, User, Package, ShoppingCart, BarChart3, Search, Trash2, MapPin, Phone, Mail } from "lucide-react";
+import { Users, User, Package, ShoppingCart, BarChart3, Search, Trash2, MapPin, Phone, Mail, Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import ProductManagement from "@/components/ProductManagement";
 import AdminContactManagement from "@/components/AdminContactManagement";
 import AdminTicketManagement from "@/components/AdminTicketManagement";
