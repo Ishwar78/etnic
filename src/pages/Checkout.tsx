@@ -24,7 +24,6 @@ export default function Checkout() {
   const [orderComplete, setOrderComplete] = useState(false);
   const [orderId, setOrderId] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("card");
-  const [codTransactionId, setCodTransactionId] = useState("");
   const [upiTransactionId, setUpiTransactionId] = useState("");
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<{
