@@ -55,6 +55,44 @@ interface AdminOrder {
   totalAmount: number;
   status: string;
   createdAt: string;
+  items?: any[];
+  shippingAddress?: any;
+  paymentMethod?: string;
+  paymentDetails?: any;
+}
+
+// Color name to hex mapping
+const colorMap: { [key: string]: string } = {
+  'Red': '#DC2626',
+  'Blue': '#1E3A8A',
+  'Green': '#059669',
+  'Yellow': '#EAB308',
+  'Pink': '#EC4899',
+  'Purple': '#7C3AED',
+  'Orange': '#EA580C',
+  'Black': '#000000',
+  'White': '#FFFFFF',
+  'Gray': '#6B7280',
+  'Brown': '#92400E',
+  'Burgundy': '#722F37',
+  'Maroon': '#800000',
+  'Ivory': '#FFFFF0',
+  'Teal': '#0D9488',
+  'Gold': '#FBBF24',
+  'Silver': '#D1D5DB',
+  'Navy': '#001F3F',
+  'Khaki': '#F0E68C',
+  'Beige': '#F5F5DC',
+};
+
+function getColorHex(colorName: string): string {
+  const lowerName = colorName.toLowerCase();
+  for (const [key, value] of Object.entries(colorMap)) {
+    if (key.toLowerCase() === lowerName) {
+      return value;
+    }
+  }
+  return '#6B7280'; // Default gray
 }
 
 export default function AdminDashboard() {
