@@ -9,8 +9,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Users, User, Package, ShoppingCart, BarChart3, Search, Trash2, MapPin, Phone, Mail } from "lucide-react";
+import { Users, User, Package, ShoppingCart, BarChart3, Search, Trash2, MapPin, Phone, Mail, Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import ProductManagement from "@/components/ProductManagement";
 import AdminContactManagement from "@/components/AdminContactManagement";
 import AdminTicketManagement from "@/components/AdminTicketManagement";
@@ -48,6 +55,44 @@ interface AdminOrder {
   totalAmount: number;
   status: string;
   createdAt: string;
+  items?: any[];
+  shippingAddress?: any;
+  paymentMethod?: string;
+  paymentDetails?: any;
+}
+
+// Color name to hex mapping
+const colorMap: { [key: string]: string } = {
+  'Red': '#DC2626',
+  'Blue': '#1E3A8A',
+  'Green': '#059669',
+  'Yellow': '#EAB308',
+  'Pink': '#EC4899',
+  'Purple': '#7C3AED',
+  'Orange': '#EA580C',
+  'Black': '#000000',
+  'White': '#FFFFFF',
+  'Gray': '#6B7280',
+  'Brown': '#92400E',
+  'Burgundy': '#722F37',
+  'Maroon': '#800000',
+  'Ivory': '#FFFFF0',
+  'Teal': '#0D9488',
+  'Gold': '#FBBF24',
+  'Silver': '#D1D5DB',
+  'Navy': '#001F3F',
+  'Khaki': '#F0E68C',
+  'Beige': '#F5F5DC',
+};
+
+function getColorHex(colorName: string): string {
+  const lowerName = colorName.toLowerCase();
+  for (const [key, value] of Object.entries(colorMap)) {
+    if (key.toLowerCase() === lowerName) {
+      return value;
+    }
+  }
+  return '#6B7280'; // Default gray
 }
 
 export default function AdminDashboard() {
@@ -63,6 +108,8 @@ export default function AdminDashboard() {
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [showUserForm, setShowUserForm] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<AdminOrder | null>(null);
+  const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null);
+  const [newOrderStatus, setNewOrderStatus] = useState<string | null>(null);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -202,6 +249,49 @@ export default function AdminDashboard() {
         description: 'Failed to update user status',
         variant: 'destructive',
       });
+    }
+  };
+
+  const updateOrderStatus = async (orderId: string, status: string) => {
+    try {
+      setUpdatingOrderId(orderId);
+      const response = await fetch(`${API_URL}/admin/orders/${orderId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        toast({
+          title: 'Success',
+          description: `Order status updated to ${status}`,
+        });
+        // Update the selected order
+        if (selectedOrder && selectedOrder._id === orderId) {
+          setSelectedOrder({ ...selectedOrder, status });
+        }
+        // Refresh orders
+        fetchOrders();
+      } else {
+        toast({
+          title: 'Error',
+          description: data.error || 'Failed to update order status',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      console.error('Error updating order status:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to update order status',
+        variant: 'destructive',
+      });
+    } finally {
+      setUpdatingOrderId(null);
     }
   };
 
@@ -587,23 +677,54 @@ export default function AdminDashboard() {
                   {selectedOrder.shippingAddress && (
                     <div>
                       <h3 className="font-semibold text-foreground mb-3">Shipping Address</h3>
-                      <div className="space-y-2 text-sm">
-                        {selectedOrder.shippingAddress.name && (
-                          <p className="font-medium">{selectedOrder.shippingAddress.name}</p>
+                      <div className="space-y-3 text-sm bg-muted/20 rounded-lg p-3">
+                        {(selectedOrder.shippingAddress.name || (selectedOrder.shippingAddress.firstName && selectedOrder.shippingAddress.lastName)) && (
+                          <div>
+                            <p className="text-muted-foreground text-xs font-medium">Full Name</p>
+                            <p className="font-medium">
+                              {selectedOrder.shippingAddress.name || `${selectedOrder.shippingAddress.firstName || ''} ${selectedOrder.shippingAddress.lastName || ''}`.trim()}
+                            </p>
+                          </div>
                         )}
-                        {selectedOrder.shippingAddress.street && (
-                          <p className="text-muted-foreground">{selectedOrder.shippingAddress.street}</p>
+                        {(selectedOrder.shippingAddress.street || selectedOrder.shippingAddress.address) && (
+                          <div>
+                            <p className="text-muted-foreground text-xs font-medium">Address</p>
+                            <p className="text-foreground">{selectedOrder.shippingAddress.street || selectedOrder.shippingAddress.address}</p>
+                          </div>
                         )}
-                        <p className="text-muted-foreground">
-                          {selectedOrder.shippingAddress.city && `${selectedOrder.shippingAddress.city}, `}
-                          {selectedOrder.shippingAddress.state && `${selectedOrder.shippingAddress.state} `}
-                          {selectedOrder.shippingAddress.zipCode}
-                        </p>
-                        {selectedOrder.shippingAddress.country && (
-                          <p className="text-muted-foreground">{selectedOrder.shippingAddress.country}</p>
+                        {(selectedOrder.shippingAddress.city || selectedOrder.shippingAddress.state || selectedOrder.shippingAddress.zipCode || selectedOrder.shippingAddress.pincode) && (
+                          <div className="grid grid-cols-2 gap-3">
+                            {selectedOrder.shippingAddress.city && (
+                              <div>
+                                <p className="text-muted-foreground text-xs font-medium">City</p>
+                                <p className="text-foreground">{selectedOrder.shippingAddress.city}</p>
+                              </div>
+                            )}
+                            {selectedOrder.shippingAddress.state && (
+                              <div>
+                                <p className="text-muted-foreground text-xs font-medium">State</p>
+                                <p className="text-foreground">{selectedOrder.shippingAddress.state}</p>
+                              </div>
+                            )}
+                            {(selectedOrder.shippingAddress.zipCode || selectedOrder.shippingAddress.pincode) && (
+                              <div>
+                                <p className="text-muted-foreground text-xs font-medium">PIN Code</p>
+                                <p className="text-foreground">{selectedOrder.shippingAddress.zipCode || selectedOrder.shippingAddress.pincode}</p>
+                              </div>
+                            )}
+                            {selectedOrder.shippingAddress.country && (
+                              <div>
+                                <p className="text-muted-foreground text-xs font-medium">Country</p>
+                                <p className="text-foreground">{selectedOrder.shippingAddress.country}</p>
+                              </div>
+                            )}
+                          </div>
                         )}
                         {selectedOrder.shippingAddress.phone && (
-                          <p className="text-muted-foreground">Phone: {selectedOrder.shippingAddress.phone}</p>
+                          <div>
+                            <p className="text-muted-foreground text-xs font-medium">Phone</p>
+                            <p className="text-foreground">{selectedOrder.shippingAddress.phone}</p>
+                          </div>
                         )}
                       </div>
                     </div>
@@ -650,6 +771,7 @@ export default function AdminDashboard() {
                       <thead className="bg-muted">
                         <tr>
                           <th className="px-4 py-2 text-left text-xs font-medium text-foreground">Product</th>
+                          <th className="px-4 py-2 text-left text-xs font-medium text-foreground">Category</th>
                           <th className="px-4 py-2 text-left text-xs font-medium text-foreground">Price</th>
                           <th className="px-4 py-2 text-left text-xs font-medium text-foreground">Qty</th>
                           <th className="px-4 py-2 text-left text-xs font-medium text-foreground">Size</th>
@@ -661,10 +783,32 @@ export default function AdminDashboard() {
                         {selectedOrder.items?.map((item: any, index: number) => (
                           <tr key={index} className="hover:bg-muted/30">
                             <td className="px-4 py-3 text-sm text-foreground">{item.name}</td>
+                            <td className="px-4 py-3 text-sm">
+                              {item.category ? (
+                                <span className="px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                  {item.category.replace(/_/g, ' ')}
+                                </span>
+                              ) : (
+                                <span className="text-xs text-muted-foreground">-</span>
+                              )}
+                            </td>
                             <td className="px-4 py-3 text-sm text-foreground">₹{item.price?.toLocaleString()}</td>
                             <td className="px-4 py-3 text-sm text-foreground">{item.quantity}</td>
                             <td className="px-4 py-3 text-sm text-muted-foreground">{item.size || '-'}</td>
-                            <td className="px-4 py-3 text-sm text-muted-foreground">{item.color || '-'}</td>
+                            <td className="px-4 py-3 text-sm">
+                              {item.color ? (
+                                <div className="flex items-center gap-2">
+                                  <div
+                                    className="w-5 h-5 rounded border border-border"
+                                    style={{backgroundColor: getColorHex(item.color)}}
+                                    title={item.color}
+                                  />
+                                  <span className="text-muted-foreground">{item.color}</span>
+                                </div>
+                              ) : (
+                                <span className="text-muted-foreground">-</span>
+                              )}
+                            </td>
                             <td className="px-4 py-3 text-sm text-right text-foreground font-medium">
                               ₹{((item.price || 0) * (item.quantity || 0)).toLocaleString()}
                             </td>
@@ -682,10 +826,56 @@ export default function AdminDashboard() {
                     <p className="text-sm text-muted-foreground">{selectedOrder.notes}</p>
                   </div>
                 )}
+
+                {/* Order Status Update */}
+                <div className="bg-muted/30 rounded-lg p-4">
+                  <h3 className="font-semibold text-foreground mb-3">Update Order Status</h3>
+                  <div className="flex gap-3 items-end">
+                    <div className="flex-1">
+                      <Label className="text-foreground mb-2 block">New Status</Label>
+                      <Select
+                        value={newOrderStatus || selectedOrder.status}
+                        onValueChange={setNewOrderStatus}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pending">Pending</SelectItem>
+                          <SelectItem value="confirmed">Confirmed</SelectItem>
+                          <SelectItem value="processing">Processing</SelectItem>
+                          <SelectItem value="shipped">Shipped</SelectItem>
+                          <SelectItem value="delivered">Delivered</SelectItem>
+                          <SelectItem value="cancelled">Cancelled</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <Button
+                      onClick={() => {
+                        if (newOrderStatus && newOrderStatus !== selectedOrder.status) {
+                          updateOrderStatus(selectedOrder._id, newOrderStatus);
+                        }
+                      }}
+                      disabled={!newOrderStatus || newOrderStatus === selectedOrder.status || updatingOrderId === selectedOrder._id}
+                    >
+                      {updatingOrderId === selectedOrder._id ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Updating...
+                        </>
+                      ) : (
+                        'Update'
+                      )}
+                    </Button>
+                  </div>
+                </div>
               </div>
 
               <DialogFooter>
-                <Button variant="outline" onClick={() => setSelectedOrder(null)}>
+                <Button variant="outline" onClick={() => {
+                  setSelectedOrder(null);
+                  setNewOrderStatus(null);
+                }}>
                   Close
                 </Button>
               </DialogFooter>

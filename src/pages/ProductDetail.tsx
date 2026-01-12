@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Heart, Share2, Truck, Shield, RotateCcw, Minus, Plus, ChevronRight, Star, ShoppingBag, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -73,6 +74,7 @@ export default function ProductDetail() {
   const [isProductLoading, setIsProductLoading] = useState(true);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [isSizeChartOpen, setIsSizeChartOpen] = useState(false);
@@ -212,6 +214,12 @@ export default function ProductDetail() {
   const handleAddToCart = () => {
     if (!product) return;
 
+    // Check if color is required and selected
+    if (product.colors && product.colors.length > 0 && !selectedColor) {
+      toast.error("Please select a color");
+      return;
+    }
+
     addToCart(
       {
         id: product._id || product.id,
@@ -220,6 +228,7 @@ export default function ProductDetail() {
         originalPrice: product.originalPrice,
         image: product.image,
         size: selectedSize || undefined,
+        color: selectedColor || undefined,
         category: product.category,
       },
       quantity
@@ -227,7 +236,27 @@ export default function ProductDetail() {
   };
 
   const handleBuyNow = () => {
-    handleAddToCart();
+    if (!product) return;
+
+    // Check if color is required and selected
+    if (product.colors && product.colors.length > 0 && !selectedColor) {
+      toast.error("Please select a color");
+      return;
+    }
+
+    addToCart(
+      {
+        id: product._id || product.id,
+        name: product.name,
+        price: product.price,
+        originalPrice: product.originalPrice,
+        image: product.image,
+        size: selectedSize || undefined,
+        color: selectedColor || undefined,
+        category: product.category,
+      },
+      quantity
+    );
     navigate("/checkout");
   };
 
@@ -458,21 +487,32 @@ export default function ProductDetail() {
                     <h3 className="font-medium mb-3">Available Colors</h3>
                     <div className="flex flex-wrap gap-3">
                       {product.colors.map((color) => (
-                        <div
+                        <button
                           key={color}
-                          className="flex flex-col items-center gap-2"
+                          onClick={() => setSelectedColor(color)}
+                          className="flex flex-col items-center gap-2 group transition-all"
+                          title={color}
                         >
                           <div
-                            className="h-10 w-10 rounded-full border-2 border-border hover:border-primary transition-colors cursor-pointer"
-                            title={color}
+                            className={cn(
+                              "h-12 w-12 rounded-full border-2 transition-all",
+                              selectedColor === color
+                                ? "border-primary ring-2 ring-primary ring-offset-2 scale-110"
+                                : "border-border group-hover:border-primary"
+                            )}
                             style={{
                               backgroundColor: getColorHex(color) || '#cccccc',
                             }}
                           />
-                          <span className="text-xs text-muted-foreground text-center max-w-[60px] truncate">
+                          <span className={cn(
+                            "text-xs text-center max-w-[60px] truncate font-medium transition-colors",
+                            selectedColor === color
+                              ? "text-primary"
+                              : "text-muted-foreground group-hover:text-foreground"
+                          )}>
                             {color}
                           </span>
-                        </div>
+                        </button>
                       ))}
                     </div>
                   </div>
