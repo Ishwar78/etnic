@@ -7,6 +7,7 @@ import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Product } from "@/data/products";
+import { normalizeProduct } from "@/lib/normalizeProduct";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
