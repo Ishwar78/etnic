@@ -365,6 +365,7 @@ router.put('/payment-settings', async (req, res) => {
       upiAddress,
       upiQrCode,
       upiName,
+      codEnabled,
       codePaymentEnabled,
       paymentCodes
     } = req.body;
@@ -381,6 +382,7 @@ router.put('/payment-settings', async (req, res) => {
     if (upiAddress) paymentSettings.upiAddress = upiAddress;
     if (upiQrCode) paymentSettings.upiQrCode = upiQrCode;
     if (upiName) paymentSettings.upiName = upiName;
+    if (codEnabled !== undefined) paymentSettings.codEnabled = codEnabled;
     if (codePaymentEnabled !== undefined) paymentSettings.codePaymentEnabled = codePaymentEnabled;
     if (paymentCodes) paymentSettings.paymentCodes = paymentCodes;
 
