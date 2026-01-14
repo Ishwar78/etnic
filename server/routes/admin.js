@@ -29,6 +29,35 @@ router.get('/contact/public', async (req, res) => {
   }
 });
 
+// Public endpoint - Get payment settings (no authentication required - needed for checkout page)
+router.get('/payment-settings/public', async (req, res) => {
+  try {
+    let paymentSettings = await PaymentSettings.findOne();
+
+    // If no payment settings exist, create one with defaults
+    if (!paymentSettings) {
+      paymentSettings = new PaymentSettings({
+        upiEnabled: true,
+        codEnabled: true,
+        codePaymentEnabled: true,
+        upiName: 'Vasstra Payments',
+        upiAddress: '',
+        upiQrCode: '',
+        paymentCodes: []
+      });
+      await paymentSettings.save();
+    }
+
+    res.json({
+      success: true,
+      paymentSettings
+    });
+  } catch (error) {
+    console.error('Get payment settings error:', error);
+    res.status(500).json({ error: 'Failed to fetch payment settings' });
+  }
+});
+
 // Apply auth middleware to all subsequent admin routes
 router.use(authMiddleware, adminMiddleware);
 
