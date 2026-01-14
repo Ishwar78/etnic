@@ -18,10 +18,20 @@ import { toast } from "sonner";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
+interface SavedAddress {
+  street?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  country?: string;
+  phone?: string;
+}
+
 export default function Checkout() {
   const navigate = useNavigate();
   const { items, subtotal, totalSavings, clearCart } = useCart();
   const { addOrder } = useOrders();
+  const { user, token } = useAuth();
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
   const [orderId, setOrderId] = useState("");
@@ -37,6 +47,9 @@ export default function Checkout() {
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
   const [paymentSettings, setPaymentSettings] = useState<any>(null);
   const [isLoadingPaymentSettings, setIsLoadingPaymentSettings] = useState(true);
+  const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
+  const [selectedAddressIndex, setSelectedAddressIndex] = useState<number | null>(null);
+  const [isAddingNewAddress, setIsAddingNewAddress] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   // Fetch payment settings on component mount
