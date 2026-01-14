@@ -100,21 +100,38 @@ export default function Checkout() {
 
   // Update form fields when selected address changes
   useEffect(() => {
-    if (formRef.current && selectedAddressIndex !== null && savedAddresses[selectedAddressIndex]) {
-      const address = savedAddresses[selectedAddressIndex];
-      const addressInput = formRef.current.querySelector('input[name="address"]') as HTMLInputElement;
-      const cityInput = formRef.current.querySelector('input[name="city"]') as HTMLInputElement;
-      const stateInput = formRef.current.querySelector('input[name="state"]') as HTMLInputElement;
-      const pincodeInput = formRef.current.querySelector('input[name="pincode"]') as HTMLInputElement;
-      const phoneInput = formRef.current.querySelector('input[name="phone"]') as HTMLInputElement;
+    if (!formRef.current) return;
 
+    const addressInput = formRef.current.querySelector('input[name="address"]') as HTMLInputElement;
+    const cityInput = formRef.current.querySelector('input[name="city"]') as HTMLInputElement;
+    const stateInput = formRef.current.querySelector('input[name="state"]') as HTMLInputElement;
+    const pincodeInput = formRef.current.querySelector('input[name="pincode"]') as HTMLInputElement;
+    const phoneInput = formRef.current.querySelector('input[name="phone"]') as HTMLInputElement;
+    const firstNameInput = formRef.current.querySelector('input[name="firstName"]') as HTMLInputElement;
+    const lastNameInput = formRef.current.querySelector('input[name="lastName"]') as HTMLInputElement;
+
+    // Set user's name on component mount
+    if (user && user.name) {
+      const nameParts = user.name.split(' ');
+      if (firstNameInput && !firstNameInput.value) firstNameInput.value = nameParts[0] || '';
+      if (lastNameInput && !lastNameInput.value) lastNameInput.value = nameParts.slice(1).join(' ') || '';
+    }
+
+    if (selectedAddressIndex !== null && savedAddresses[selectedAddressIndex]) {
+      const address = savedAddresses[selectedAddressIndex];
       if (addressInput) addressInput.value = address.street || '';
       if (cityInput) cityInput.value = address.city || '';
       if (stateInput) stateInput.value = address.state || '';
       if (pincodeInput) pincodeInput.value = address.zipCode || '';
       if (phoneInput) phoneInput.value = address.phone || '';
+    } else if (isAddingNewAddress) {
+      // Clear address fields when adding new address
+      if (addressInput) addressInput.value = '';
+      if (cityInput) cityInput.value = '';
+      if (stateInput) stateInput.value = '';
+      if (pincodeInput) pincodeInput.value = '';
     }
-  }, [selectedAddressIndex, savedAddresses]);
+  }, [selectedAddressIndex, savedAddresses, isAddingNewAddress, user]);
 
   const shippingCost = subtotal >= 999 ? 0 : 99;
   const discountAmount = appliedCoupon?.discount || 0;
