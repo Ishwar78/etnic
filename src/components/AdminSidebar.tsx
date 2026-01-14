@@ -100,7 +100,7 @@ export default function AdminSidebar() {
         });
         const data = await response.json();
         if (data.success) {
-          setPendingOrderCount(data.totalPending || 0);
+          setPendingOrderCount(data.pendingCount || 0);
         }
       } catch (error) {
         console.error('Error fetching pending orders count:', error);
