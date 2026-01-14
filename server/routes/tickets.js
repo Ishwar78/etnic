@@ -14,7 +14,7 @@ router.post('/', authMiddleware, async (req, res) => {
     }
 
     const ticket = new Ticket({
-      userId: req.user.id,
+      userId: req.user._id,
       subject,
       category,
       message,
