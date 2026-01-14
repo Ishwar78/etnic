@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Search, Heart, ShoppingBag, Menu, X, ChevronDown, ChevronRight, User, LogOut, Package } from "lucide-react";
+import { Search, Heart, ShoppingBag, Menu, X, ChevronDown, ChevronRight, User, LogOut, Package, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/contexts/CartContext";
