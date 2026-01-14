@@ -297,6 +297,58 @@ export default function AdminDashboard() {
     }
   };
 
+  const updateTrackingId = async (orderId: string, newTrackingId: string) => {
+    if (!newTrackingId.trim()) {
+      toast({
+        title: 'Error',
+        description: 'Please enter a tracking ID',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    try {
+      setUpdatingTrackingId(true);
+      const response = await fetch(`${API_URL}/admin/orders/${orderId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ trackingId: newTrackingId }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        toast({
+          title: 'Success',
+          description: 'Tracking ID updated successfully',
+        });
+        // Update the selected order
+        if (selectedOrder && selectedOrder._id === orderId) {
+          setSelectedOrder({ ...selectedOrder, trackingId: newTrackingId });
+        }
+        // Refresh orders
+        fetchOrders();
+      } else {
+        toast({
+          title: 'Error',
+          description: data.error || 'Failed to update tracking ID',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      console.error('Error updating tracking ID:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to update tracking ID',
+        variant: 'destructive',
+      });
+    } finally {
+      setUpdatingTrackingId(false);
+    }
+  };
+
   // Show loading state while checking auth
   if (authLoading) {
     return (
