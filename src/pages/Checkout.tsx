@@ -121,6 +121,7 @@ export default function Checkout() {
         city: formData.get("city") as string,
         state: formData.get("state") as string,
         pincode: formData.get("pincode") as string,
+        phone: formData.get("phone") as string,
       };
 
       // Simulate payment processing
