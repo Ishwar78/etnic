@@ -67,6 +67,33 @@ export default function TrackOrder() {
     }
   }, []);
 
+  const handleTrackAuto = async (id: string) => {
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch(
+        `${API_URL}/orders/track/${encodeURIComponent(id)}`
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || "Order not found");
+        setOrder(null);
+        return;
+      }
+
+      setOrder(data.order);
+    } catch (err) {
+      const errorMsg = "Failed to fetch order details";
+      setError(errorMsg);
+      setOrder(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleTrack = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -75,44 +102,7 @@ export default function TrackOrder() {
       return;
     }
 
-    setIsLoading(true);
-    setError("");
-
-    try {
-      const response = await fetch(
-        `${API_URL}/orders/track/${encodeURIComponent(trackingId)}`
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.error || "Order not found");
-        setOrder(null);
-        toast({
-          title: "Not Found",
-          description: data.error || "Could not find order with this tracking ID",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      setOrder(data.order);
-      toast({
-        title: "Success",
-        description: "Order found! Here are your details.",
-      });
-    } catch (err) {
-      const errorMsg = "Failed to fetch order details";
-      setError(errorMsg);
-      setOrder(null);
-      toast({
-        title: "Error",
-        description: errorMsg,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    await handleTrackAuto(trackingId);
   };
 
   const getStatusProgress = (status: string) => {
