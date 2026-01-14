@@ -411,7 +411,7 @@ export default function Checkout() {
                   )}
 
                   {/* UPI Payment Details */}
-                  {paymentMethod === "upi" && !isLoadingPaymentSettings && paymentSettings?.upiEnabled && (
+                  {paymentMethod === "upi" && paymentSettings?.upiEnabled && (
                     <div className="mt-6 pt-6 border-t border-border space-y-5">
                       <h3 className="font-semibold text-lg">UPI Payment Instructions</h3>
 
