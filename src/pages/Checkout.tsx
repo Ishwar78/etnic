@@ -398,108 +398,112 @@ export default function Checkout() {
                     </RadioGroup>
                   )}
 
+                  {/* UPI Payment Details */}
+                  {paymentMethod === "upi" && !isLoadingPaymentSettings && paymentSettings?.upiEnabled && (
+                    <div className="mt-6 pt-6 border-t border-border space-y-5">
+                      <h3 className="font-semibold text-lg">UPI Payment Instructions</h3>
+
+                      {/* QR Code Section */}
+                      {paymentSettings?.upiQrCode && (
+                        <div className="space-y-3">
+                          <p className="text-sm font-medium text-foreground">Step 1: Scan QR Code</p>
+                          <div className="flex flex-col items-center gap-3 bg-blue-500/10 border border-blue-500/30 rounded-lg p-6">
+                            <img
+                              src={paymentSettings.upiQrCode}
+                              alt="UPI QR Code"
+                              className="w-48 h-48 border-2 border-blue-500/50 rounded-lg p-2 bg-white shadow-md"
+                            />
+                            <p className="text-sm font-medium text-foreground">Scan with Google Pay, PhonePe, or Paytm</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* UPI Address/ID Section */}
+                      {paymentSettings?.upiAddress && (
+                        <div className="space-y-3">
+                          <p className="text-sm font-medium text-foreground">Step 2: UPI Address</p>
+                          <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-4">
+                            <p className="text-xs text-muted-foreground font-semibold mb-2 uppercase">UPI ID</p>
+                            <p className="font-mono text-base font-bold text-foreground break-all bg-white/50 rounded p-3 text-center">
+                              {paymentSettings.upiAddress}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-3">
+                              You can enter this manually in your payment app if QR scan doesn't work
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Transaction ID Field */}
+                      <div className="space-y-3">
+                        <p className="text-sm font-medium text-foreground">Step 3: Enter Transaction ID</p>
+                        <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4 space-y-3">
+                          <div className="space-y-2">
+                            <Label htmlFor="upi-transaction-id" className="text-foreground font-medium">
+                              Transaction ID <span className="text-muted-foreground text-xs font-normal">(Optional)</span>
+                            </Label>
+                            <Input
+                              id="upi-transaction-id"
+                              placeholder="e.g., UPI123456789 or UPIN7D3Q4K"
+                              value={upiTransactionId}
+                              onChange={(e) => setUpiTransactionId(e.target.value)}
+                              className="font-mono text-sm bg-white"
+                            />
+                            <p className="text-xs text-muted-foreground">
+                              After completing payment, find your transaction ID in your UPI app under "Recent Transactions" or "Payment Confirmation"
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Alternative Payment Methods */}
+                      {paymentSettings?.paymentCodes && paymentSettings.paymentCodes.filter((code: any) => code.isActive).length > 0 && (
+                        <div className="space-y-3">
+                          <p className="text-sm font-medium text-foreground">Alternative Payment Apps</p>
+                          <div className="grid grid-cols-1 gap-3">
+                            {paymentSettings.paymentCodes.filter((code: any) => code.isActive).map((code: any, index: number) => (
+                              <div key={index} className="border border-border rounded-lg p-4 bg-muted/20">
+                                <p className="text-sm font-semibold text-foreground mb-3 capitalize">
+                                  {code.name.replace(/_/g, ' ')}
+                                </p>
+                                {code.qrCode && (
+                                  <div className="flex flex-col items-center gap-3 mb-3">
+                                    <img
+                                      src={code.qrCode}
+                                      alt={code.name}
+                                      className="w-40 h-40 border border-border rounded p-1 bg-white"
+                                    />
+                                  </div>
+                                )}
+                                {code.address && (
+                                  <div className="bg-white/50 rounded p-2">
+                                    <p className="text-xs font-mono text-center text-foreground break-all font-semibold">
+                                      {code.address}
+                                    </p>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {/* COD Details */}
                   {paymentMethod === "cod" && (
                     <div className="mt-6 pt-6 border-t border-border space-y-4">
                       <h3 className="font-semibold">Cash on Delivery</h3>
                       <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4">
-                        <p className="text-sm text-foreground">
-                          You will pay ₹{total.toLocaleString()} when you receive your order. No payment is required right now.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* UPI Details */}
-                  {paymentMethod === "upi" && (
-                    <div className="mt-6 pt-6 border-t border-border space-y-4">
-                      <h3 className="font-semibold">UPI Payment Details</h3>
-
-                      {isLoadingPaymentSettings ? (
-                        <div className="bg-muted/50 rounded-lg p-4 text-center">
-                          <p className="text-sm text-muted-foreground">Loading payment options...</p>
-                        </div>
-                      ) : paymentSettings?.upiEnabled ? (
-                        <>
-                          <div className="space-y-4">
-                            {paymentSettings?.upiQrCode && (
-                              <div className="flex flex-col items-center gap-3 bg-muted/20 rounded-lg p-4">
-                                <img
-                                  src={paymentSettings.upiQrCode}
-                                  alt="UPI QR Code"
-                                  className="w-56 h-56 border-2 border-border rounded-lg p-2 bg-white shadow-sm"
-                                />
-                                <p className="text-sm font-medium text-foreground">Scan with Google Pay, PhonePe, or Paytm</p>
-                              </div>
-                            )}
-
-                            {paymentSettings?.upiAddress && (
-                              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
-                                <p className="text-xs text-muted-foreground font-semibold mb-2">UPI ID / Address</p>
-                                <p className="font-mono text-lg font-bold text-foreground break-all">
-                                  {paymentSettings.upiAddress}
-                                </p>
-                                <p className="text-xs text-muted-foreground mt-2">
-                                  You can enter this manually if QR scan doesn't work
-                                </p>
-                              </div>
-                            )}
-
-                            {paymentSettings?.paymentCodes && paymentSettings.paymentCodes.length > 0 && (
-                              <div className="space-y-3">
-                                <p className="text-sm font-semibold text-foreground">Alternative Payment Apps:</p>
-                                <div className="grid grid-cols-1 gap-2">
-                                  {paymentSettings.paymentCodes.filter((code: any) => code.isActive).map((code: any, index: number) => (
-                                    <div key={index} className="border border-border rounded-lg p-3 bg-muted/30">
-                                      <p className="text-sm font-medium capitalize text-foreground mb-2">
-                                        {code.name.replace('_', ' ')}
-                                      </p>
-                                      {code.qrCode && (
-                                        <img
-                                          src={code.qrCode}
-                                          alt={code.name}
-                                          className="w-32 h-32 mx-auto border border-border rounded p-1 bg-white mb-2"
-                                        />
-                                      )}
-                                      {code.address && (
-                                        <p className="text-xs font-mono text-center text-foreground break-all font-semibold">
-                                          {code.address}
-                                        </p>
-                                      )}
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4 space-y-3">
-                            <p className="text-sm text-foreground font-medium">
-                              ✓ After payment, you can enter your transaction ID (optional)
-                            </p>
-                            <div className="space-y-2">
-                              <Label htmlFor="upi-transaction-id">Transaction ID <span className="text-muted-foreground text-xs">(Optional)</span></Label>
-                              <Input
-                                id="upi-transaction-id"
-                                placeholder="e.g., UPI123456789 or UPIN7D3Q4K"
-                                value={upiTransactionId}
-                                onChange={(e) => setUpiTransactionId(e.target.value)}
-                                className="font-mono text-sm"
-                              />
-                              <p className="text-xs text-muted-foreground">
-                                Find this in your UPI app under "Payment Confirmation"
-                              </p>
-                            </div>
-                          </div>
-                        </>
-                      ) : (
-                        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 space-y-2">
-                          <p className="text-sm font-medium text-foreground">⚠ UPI Payment Not Available</p>
+                        <div className="space-y-3">
+                          <p className="text-sm text-foreground font-medium">
+                            ✓ You will pay ₹{total.toLocaleString()} when you receive your order.
+                          </p>
                           <p className="text-sm text-muted-foreground">
-                            UPI payment is currently disabled. Please select another payment method.
+                            No payment is required right now. Our delivery partner will collect payment at your doorstep.
                           </p>
                         </div>
-                      )}
+                      </div>
                     </div>
                   )}
                 </div>
