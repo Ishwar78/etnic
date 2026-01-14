@@ -22,6 +22,7 @@ interface PaymentSettings {
   upiAddress: string;
   upiQrCode: string;
   upiName: string;
+  codEnabled: boolean;
   codePaymentEnabled: boolean;
   paymentCodes: PaymentCodeSettings[];
 }
