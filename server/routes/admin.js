@@ -359,7 +359,15 @@ router.get('/payment-settings', async (req, res) => {
 
     // If no payment settings exist, create one with defaults
     if (!paymentSettings) {
-      paymentSettings = new PaymentSettings();
+      paymentSettings = new PaymentSettings({
+        upiEnabled: true,
+        codEnabled: true,
+        codePaymentEnabled: true,
+        upiName: 'Vasstra Payments',
+        upiAddress: '',
+        upiQrCode: '',
+        paymentCodes: []
+      });
       await paymentSettings.save();
     }
 
