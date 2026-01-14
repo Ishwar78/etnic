@@ -169,7 +169,8 @@ export default function FeaturedProducts() {
         const response = await fetch(`${API_URL}/products?limit=8`);
         const data = await response.json();
         if (data.success) {
-          setProducts(data.products.slice(0, 8));
+          const normalizedProducts = (data.products || []).slice(0, 8).map((p: any) => normalizeProduct(p));
+          setProducts(normalizedProducts);
         }
       } catch (error) {
         console.error('Error fetching products:', error);
