@@ -408,16 +408,34 @@ export default function Checkout() {
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="firstName">First Name</Label>
-                        <Input id="firstName" name="firstName" placeholder="First name" required />
+                        <Input
+                          id="firstName"
+                          name="firstName"
+                          placeholder="First name"
+                          required
+                          defaultValue={user?.name?.split(' ')[0] || ''}
+                        />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="lastName">Last Name</Label>
-                        <Input id="lastName" name="lastName" placeholder="Last name" required />
+                        <Input
+                          id="lastName"
+                          name="lastName"
+                          placeholder="Last name"
+                          required
+                          defaultValue={user?.name?.split(' ').slice(1).join(' ') || ''}
+                        />
                       </div>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="address">Address</Label>
-                      <Input id="address" name="address" placeholder="Street address" required />
+                      <Input
+                        id="address"
+                        name="address"
+                        placeholder="Street address"
+                        required
+                        defaultValue={selectedAddressIndex !== null && savedAddresses[selectedAddressIndex] ? savedAddresses[selectedAddressIndex].street || '' : ''}
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="apartment">Apartment, suite, etc. (optional)</Label>
@@ -426,15 +444,33 @@ export default function Checkout() {
                     <div className="grid sm:grid-cols-3 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="city">City</Label>
-                        <Input id="city" name="city" placeholder="City" required />
+                        <Input
+                          id="city"
+                          name="city"
+                          placeholder="City"
+                          required
+                          defaultValue={selectedAddressIndex !== null && savedAddresses[selectedAddressIndex] ? savedAddresses[selectedAddressIndex].city || '' : ''}
+                        />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="state">State</Label>
-                        <Input id="state" name="state" placeholder="State" required />
+                        <Input
+                          id="state"
+                          name="state"
+                          placeholder="State"
+                          required
+                          defaultValue={selectedAddressIndex !== null && savedAddresses[selectedAddressIndex] ? savedAddresses[selectedAddressIndex].state || '' : ''}
+                        />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="pincode">PIN Code</Label>
-                        <Input id="pincode" name="pincode" placeholder="PIN code" required />
+                        <Input
+                          id="pincode"
+                          name="pincode"
+                          placeholder="PIN code"
+                          required
+                          defaultValue={selectedAddressIndex !== null && savedAddresses[selectedAddressIndex] ? savedAddresses[selectedAddressIndex].zipCode || '' : ''}
+                        />
                       </div>
                     </div>
                   </div>
