@@ -58,15 +58,34 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Get single product (public)
-router.get('/:id', async (req, res) => {
+// Get single product by slug (public)
+router.get('/slug/:slug', async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id).lean();
-    
+    const product = await Product.findOne({ slug: req.params.slug.toLowerCase() }).lean();
+
     if (!product) {
       return res.status(404).json({ error: 'Product not found' });
     }
-    
+
+    res.json({
+      success: true,
+      product,
+    });
+  } catch (error) {
+    console.error('Error fetching product by slug:', error);
+    res.status(500).json({ error: 'Failed to fetch product' });
+  }
+});
+
+// Get single product by ID (public)
+router.get('/:id', async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id).lean();
+
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
     res.json({
       success: true,
       product,
