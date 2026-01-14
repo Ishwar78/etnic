@@ -71,6 +71,33 @@ export default function Checkout() {
     fetchPaymentSettings();
   }, []);
 
+  // Fetch saved addresses from user profile
+  useEffect(() => {
+    if (user && user.address) {
+      const addresses: SavedAddress[] = [];
+      // Add user's primary address if it exists
+      if (user.address && (user.address.street || user.address.city)) {
+        addresses.push({
+          street: user.address.street || '',
+          city: user.address.city || '',
+          state: user.address.state || '',
+          zipCode: user.address.zipCode || '',
+          country: user.address.country || '',
+          phone: user.phone || '',
+        });
+      }
+      setSavedAddresses(addresses);
+      if (addresses.length > 0) {
+        setSelectedAddressIndex(0);
+        setIsAddingNewAddress(false);
+      } else {
+        setIsAddingNewAddress(true);
+      }
+    } else {
+      setIsAddingNewAddress(true);
+    }
+  }, [user]);
+
   const shippingCost = subtotal >= 999 ? 0 : 99;
   const discountAmount = appliedCoupon?.discount || 0;
   const total = Math.max(0, subtotal + shippingCost - discountAmount);
