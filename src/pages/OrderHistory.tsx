@@ -22,6 +22,8 @@ const statusColors = {
 export default function OrderHistory() {
   const { orders, isLoading } = useOrders();
   const { user, isLoading: authLoading } = useAuth();
+  const navigate = useNavigate();
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
   // Show loading state while checking auth
   if (authLoading) {
