@@ -319,10 +319,87 @@ export default function Checkout() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="phone">Phone</Label>
-                      <Input id="phone" name="phone" type="tel" placeholder="+91 98765 43210" required />
+                      <Input
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        placeholder="+91 98765 43210"
+                        required
+                        defaultValue={selectedAddressIndex !== null && savedAddresses[selectedAddressIndex] ? savedAddresses[selectedAddressIndex].phone : ''}
+                      />
                     </div>
                   </div>
                 </div>
+
+                {/* Saved Addresses */}
+                {savedAddresses.length > 0 && (
+                  <div className="bg-card border border-border rounded-xl p-6">
+                    <h2 className="font-display text-xl font-semibold mb-6">Your Saved Addresses</h2>
+                    <RadioGroup
+                      value={isAddingNewAddress ? "new" : (selectedAddressIndex?.toString() ?? "-1")}
+                      onValueChange={(value) => {
+                        if (value === "new") {
+                          setIsAddingNewAddress(true);
+                          setSelectedAddressIndex(null);
+                        } else {
+                          setIsAddingNewAddress(false);
+                          const index = parseInt(value);
+                          setSelectedAddressIndex(index);
+                          // Populate form fields
+                          const address = savedAddresses[index];
+                          if (address && formRef.current) {
+                            (formRef.current.querySelector('input[name="address"]') as HTMLInputElement).value = address.street || '';
+                            (formRef.current.querySelector('input[name="city"]') as HTMLInputElement).value = address.city || '';
+                            (formRef.current.querySelector('input[name="state"]') as HTMLInputElement).value = address.state || '';
+                            (formRef.current.querySelector('input[name="pincode"]') as HTMLInputElement).value = address.zipCode || '';
+                            (formRef.current.querySelector('input[name="phone"]') as HTMLInputElement).value = address.phone || '';
+                          }
+                        }
+                      }}
+                    >
+                      <div className="space-y-3">
+                        {savedAddresses.map((address, index) => (
+                          <label
+                            key={index}
+                            className={`flex items-start gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${
+                              selectedAddressIndex === index && !isAddingNewAddress
+                                ? "border-primary bg-primary/5"
+                                : "border-border hover:border-primary/50"
+                            }`}
+                          >
+                            <RadioGroupItem value={index.toString()} className="mt-1" />
+                            <div className="flex-1">
+                              <p className="font-medium text-sm">
+                                {address.street && `${address.street}`}
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                {address.city && `${address.city}, `}
+                                {address.state && `${address.state} `}
+                                {address.zipCode}
+                              </p>
+                              {address.phone && <p className="text-xs text-muted-foreground">Phone: {address.phone}</p>}
+                            </div>
+                          </label>
+                        ))}
+
+                        {/* Add New Address Option */}
+                        <label
+                          className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${
+                            isAddingNewAddress
+                              ? "border-primary bg-primary/5"
+                              : "border-border hover:border-primary/50"
+                          }`}
+                        >
+                          <RadioGroupItem value="new" />
+                          <div className="flex items-center gap-2">
+                            <Plus className="h-4 w-4" />
+                            <span className="font-medium text-sm">Add New Address</span>
+                          </div>
+                        </label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                )}
 
                 {/* Shipping Address */}
                 <div className="bg-card border border-border rounded-xl p-6">
