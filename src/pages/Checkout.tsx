@@ -166,6 +166,35 @@ export default function Checkout() {
         phone: formData.get("phone") as string,
       };
 
+      // Save new address to user profile if adding new address
+      if (isAddingNewAddress && token && user) {
+        try {
+          const response = await fetch(`${API_URL}/auth/profile`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              address: {
+                street: shippingAddress.address,
+                city: shippingAddress.city,
+                state: shippingAddress.state,
+                zipCode: shippingAddress.pincode,
+                country: "India",
+              },
+              phone: shippingAddress.phone,
+            }),
+          });
+
+          if (!response.ok) {
+            console.error('Failed to save address to profile');
+          }
+        } catch (error) {
+          console.error('Error saving address:', error);
+        }
+      }
+
       // Simulate payment processing
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
