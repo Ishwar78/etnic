@@ -12,6 +12,7 @@ import ticketsRoutes from './routes/tickets.js';
 import couponsRoutes from './routes/coupons.js';
 import sizeChartsRoutes from './routes/sizeCharts.js';
 import ordersRoutes from './routes/orders.js';
+import invoicesRoutes from './routes/invoices.js';
 import User from './models/User.js';
 import Contact from './models/Contact.js';
 import HeroMedia from './models/HeroMedia.js';
