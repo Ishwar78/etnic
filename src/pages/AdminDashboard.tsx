@@ -127,9 +127,16 @@ export default function AdminDashboard() {
   // Fetch dashboard stats
   useEffect(() => {
     if (!token) return;
-    
+
     fetchStats();
   }, [token]);
+
+  // Initialize tracking ID when order is selected
+  useEffect(() => {
+    if (selectedOrder && selectedOrder.trackingId) {
+      setTrackingId(selectedOrder.trackingId);
+    }
+  }, [selectedOrder]);
 
   const fetchStats = async () => {
     try {
