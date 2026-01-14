@@ -495,16 +495,32 @@ export default function PaymentManagement() {
       {/* Cash on Delivery */}
       <Card>
         <CardHeader>
-          <CardTitle>Cash on Delivery (COD)</CardTitle>
-          <CardDescription>Customers will pay when they receive their order</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4">
-            <p className="text-sm text-green-600">
-              ✓ COD is always available and cannot be disabled.
-            </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Cash on Delivery (COD)</CardTitle>
+              <CardDescription>Customers will pay when they receive their order</CardDescription>
+            </div>
+            <div className="flex items-center gap-2">
+              <Label htmlFor="cod-toggle" className="text-sm">Enable COD</Label>
+              <Switch
+                id="cod-toggle"
+                checked={paymentSettings.codEnabled}
+                onCheckedChange={(checked) =>
+                  setPaymentSettings(prev => ({ ...prev, codEnabled: checked }))
+                }
+              />
+            </div>
           </div>
-        </CardContent>
+        </CardHeader>
+        {paymentSettings.codEnabled && (
+          <CardContent>
+            <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4">
+              <p className="text-sm text-green-600">
+                ✓ COD payment option is enabled for customers.
+              </p>
+            </div>
+          </CardContent>
+        )}
       </Card>
 
       {/* Save Button */}
