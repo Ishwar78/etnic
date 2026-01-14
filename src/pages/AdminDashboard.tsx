@@ -28,6 +28,7 @@ import AdminHeroMediaManagement from "@/components/AdminHeroMediaManagement";
 import PaymentManagement from "@/components/PaymentManagement";
 import SizeChartManagement from "@/components/SizeChartManagement";
 import InvoiceDisplay from "@/components/InvoiceDisplay";
+import AdminInvoiceManagement from "@/components/AdminInvoiceManagement";
 
 interface DashboardStats {
   totalUsers: number;
