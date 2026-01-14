@@ -22,9 +22,11 @@ const statusColors = {
 
 export default function OrderHistory() {
   const { orders, isLoading } = useOrders();
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading, token } = useAuth();
   const navigate = useNavigate();
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [selectedOrderForInvoice, setSelectedOrderForInvoice] = useState<string | null>(null);
+  const [showInvoice, setShowInvoice] = useState(false);
 
   // Show loading state while checking auth
   if (authLoading) {
