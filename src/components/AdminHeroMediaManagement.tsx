@@ -183,6 +183,38 @@ export default function AdminHeroMediaManagement() {
     }
   };
 
+  // Handle file upload
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result as string;
+      setFormData({ ...formData, mediaUrl: base64 });
+      setMediaPreview(base64);
+      setUploadProgress(100);
+
+      toast({
+        title: 'Success',
+        description: 'File uploaded successfully',
+      });
+
+      // Reset progress after 2 seconds
+      setTimeout(() => setUploadProgress(0), 2000);
+    };
+
+    reader.onerror = () => {
+      toast({
+        title: 'Error',
+        description: 'Failed to upload file',
+        variant: 'destructive',
+      });
+    };
+
+    reader.readAsDataURL(file);
+  };
+
   // Reset form
   const resetForm = () => {
     setFormData({
@@ -195,6 +227,8 @@ export default function AdminHeroMediaManagement() {
       ctaLink: '',
       order: 0,
     });
+    setMediaPreview(null);
+    setUploadProgress(0);
     setEditingId(null);
     setShowForm(false);
   };
