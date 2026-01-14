@@ -98,6 +98,24 @@ export default function Checkout() {
     }
   }, [user]);
 
+  // Update form fields when selected address changes
+  useEffect(() => {
+    if (formRef.current && selectedAddressIndex !== null && savedAddresses[selectedAddressIndex]) {
+      const address = savedAddresses[selectedAddressIndex];
+      const addressInput = formRef.current.querySelector('input[name="address"]') as HTMLInputElement;
+      const cityInput = formRef.current.querySelector('input[name="city"]') as HTMLInputElement;
+      const stateInput = formRef.current.querySelector('input[name="state"]') as HTMLInputElement;
+      const pincodeInput = formRef.current.querySelector('input[name="pincode"]') as HTMLInputElement;
+      const phoneInput = formRef.current.querySelector('input[name="phone"]') as HTMLInputElement;
+
+      if (addressInput) addressInput.value = address.street || '';
+      if (cityInput) cityInput.value = address.city || '';
+      if (stateInput) stateInput.value = address.state || '';
+      if (pincodeInput) pincodeInput.value = address.zipCode || '';
+      if (phoneInput) phoneInput.value = address.phone || '';
+    }
+  }, [selectedAddressIndex, savedAddresses]);
+
   const shippingCost = subtotal >= 999 ? 0 : 99;
   const discountAmount = appliedCoupon?.discount || 0;
   const total = Math.max(0, subtotal + shippingCost - discountAmount);
