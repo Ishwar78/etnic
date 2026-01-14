@@ -110,6 +110,8 @@ export default function AdminDashboard() {
   const [selectedOrder, setSelectedOrder] = useState<AdminOrder | null>(null);
   const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null);
   const [newOrderStatus, setNewOrderStatus] = useState<string | null>(null);
+  const [trackingId, setTrackingId] = useState<string>("");
+  const [updatingTrackingId, setUpdatingTrackingId] = useState(false);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
