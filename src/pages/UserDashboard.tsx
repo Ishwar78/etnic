@@ -15,6 +15,7 @@ import UserSidebar from "@/components/UserSidebar";
 import UserCartSection from "@/components/UserCartSection";
 import UserWishlistSection from "@/components/UserWishlistSection";
 import SupportTicketForm from "@/components/SupportTicketForm";
+import InvoiceDisplay from "@/components/InvoiceDisplay";
 import { format } from "date-fns";
 
 const statusColors: Record<string, string> = {
@@ -33,6 +34,8 @@ export default function UserDashboard() {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "profile");
+  const [selectedOrderForInvoice, setSelectedOrderForInvoice] = useState<string | null>(null);
+  const [showInvoice, setShowInvoice] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -278,6 +281,19 @@ export default function UserDashboard() {
                           </div>
                         </div>
                       )}
+
+                      {/* View Invoice Button */}
+                      <Button
+                        variant="gold"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedOrderForInvoice(order._id || order.id);
+                          setShowInvoice(true);
+                        }}
+                        className="w-full"
+                      >
+                        View Invoice
+                      </Button>
                     </div>
                   );
                 })}
@@ -473,6 +489,16 @@ export default function UserDashboard() {
       </Helmet>
 
       <Header />
+
+      {/* Invoice Display */}
+      {selectedOrderForInvoice && (
+        <InvoiceDisplay
+          orderId={selectedOrderForInvoice}
+          open={showInvoice}
+          onOpenChange={setShowInvoice}
+          token={token}
+        />
+      )}
 
       <main className="min-h-screen bg-background pt-24 pb-16">
         <div className="container mx-auto px-4">

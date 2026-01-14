@@ -53,6 +53,57 @@ const paymentSettingsSchema = new mongoose.Schema({
     }
   }],
 
+  // Invoice Settings
+  invoiceCompanyLogo: {
+    type: String, // Base64 encoded image
+    default: ''
+  },
+  invoiceCompanyName: {
+    type: String,
+    default: 'Vasstra Fashion',
+    trim: true
+  },
+  invoiceCompanyGST: {
+    type: String,
+    default: '',
+    trim: true
+  },
+  invoiceCompanyAddress: {
+    type: String,
+    default: '',
+    trim: true
+  },
+  invoiceCompanyCity: {
+    type: String,
+    default: '',
+    trim: true
+  },
+  invoiceCompanyState: {
+    type: String,
+    default: '',
+    trim: true
+  },
+  invoiceCompanyZipCode: {
+    type: String,
+    default: '',
+    trim: true
+  },
+  invoiceCompanyCountry: {
+    type: String,
+    default: 'India',
+    trim: true
+  },
+  invoiceCompanyPhone: {
+    type: String,
+    default: '',
+    trim: true
+  },
+  invoiceCompanyEmail: {
+    type: String,
+    default: '',
+    trim: true
+  },
+
   // Timestamps
   createdAt: {
     type: Date,

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ChevronRight, Truck, Shield, CheckCircle2, Loader2, X, DollarSign } from "lucide-react";
+import { ChevronRight, Truck, Shield, CheckCircle2, Loader2, X, DollarSign, Plus } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -11,15 +11,27 @@ import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useCart } from "@/contexts/CartContext";
 import { useOrders } from "@/contexts/OrderContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+interface SavedAddress {
+  street?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  country?: string;
+  phone?: string;
+}
 
 export default function Checkout() {
   const navigate = useNavigate();
   const { items, subtotal, totalSavings, clearCart } = useCart();
   const { addOrder } = useOrders();
+  const { user, token } = useAuth();
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
   const [orderId, setOrderId] = useState("");
@@ -35,6 +47,9 @@ export default function Checkout() {
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
   const [paymentSettings, setPaymentSettings] = useState<any>(null);
   const [isLoadingPaymentSettings, setIsLoadingPaymentSettings] = useState(true);
+  const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
+  const [selectedAddressIndex, setSelectedAddressIndex] = useState<number | null>(null);
+  const [isAddingNewAddress, setIsAddingNewAddress] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   // Fetch payment settings on component mount
@@ -55,6 +70,68 @@ export default function Checkout() {
 
     fetchPaymentSettings();
   }, []);
+
+  // Fetch saved addresses from user profile
+  useEffect(() => {
+    if (user && user.address) {
+      const addresses: SavedAddress[] = [];
+      // Add user's primary address if it exists
+      if (user.address && (user.address.street || user.address.city)) {
+        addresses.push({
+          street: user.address.street || '',
+          city: user.address.city || '',
+          state: user.address.state || '',
+          zipCode: user.address.zipCode || '',
+          country: user.address.country || '',
+          phone: user.phone || '',
+        });
+      }
+      setSavedAddresses(addresses);
+      if (addresses.length > 0) {
+        setSelectedAddressIndex(0);
+        setIsAddingNewAddress(false);
+      } else {
+        setIsAddingNewAddress(true);
+      }
+    } else {
+      setIsAddingNewAddress(true);
+    }
+  }, [user]);
+
+  // Update form fields when selected address changes
+  useEffect(() => {
+    if (!formRef.current) return;
+
+    const addressInput = formRef.current.querySelector('input[name="address"]') as HTMLInputElement;
+    const cityInput = formRef.current.querySelector('input[name="city"]') as HTMLInputElement;
+    const stateInput = formRef.current.querySelector('input[name="state"]') as HTMLInputElement;
+    const pincodeInput = formRef.current.querySelector('input[name="pincode"]') as HTMLInputElement;
+    const phoneInput = formRef.current.querySelector('input[name="phone"]') as HTMLInputElement;
+    const firstNameInput = formRef.current.querySelector('input[name="firstName"]') as HTMLInputElement;
+    const lastNameInput = formRef.current.querySelector('input[name="lastName"]') as HTMLInputElement;
+
+    // Set user's name on component mount
+    if (user && user.name) {
+      const nameParts = user.name.split(' ');
+      if (firstNameInput && !firstNameInput.value) firstNameInput.value = nameParts[0] || '';
+      if (lastNameInput && !lastNameInput.value) lastNameInput.value = nameParts.slice(1).join(' ') || '';
+    }
+
+    if (selectedAddressIndex !== null && savedAddresses[selectedAddressIndex]) {
+      const address = savedAddresses[selectedAddressIndex];
+      if (addressInput) addressInput.value = address.street || '';
+      if (cityInput) cityInput.value = address.city || '';
+      if (stateInput) stateInput.value = address.state || '';
+      if (pincodeInput) pincodeInput.value = address.zipCode || '';
+      if (phoneInput) phoneInput.value = address.phone || '';
+    } else if (isAddingNewAddress) {
+      // Clear address fields when adding new address
+      if (addressInput) addressInput.value = '';
+      if (cityInput) cityInput.value = '';
+      if (stateInput) stateInput.value = '';
+      if (pincodeInput) pincodeInput.value = '';
+    }
+  }, [selectedAddressIndex, savedAddresses, isAddingNewAddress, user]);
 
   const shippingCost = subtotal >= 999 ? 0 : 99;
   const discountAmount = appliedCoupon?.discount || 0;
@@ -123,6 +200,35 @@ export default function Checkout() {
         pincode: formData.get("pincode") as string,
         phone: formData.get("phone") as string,
       };
+
+      // Save new address to user profile if adding new address
+      if (isAddingNewAddress && token && user) {
+        try {
+          const response = await fetch(`${API_URL}/auth/profile`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              address: {
+                street: shippingAddress.address,
+                city: shippingAddress.city,
+                state: shippingAddress.state,
+                zipCode: shippingAddress.pincode,
+                country: "India",
+              },
+              phone: shippingAddress.phone,
+            }),
+          });
+
+          if (!response.ok) {
+            console.error('Failed to save address to profile');
+          }
+        } catch (error) {
+          console.error('Error saving address:', error);
+        }
+      }
 
       // Simulate payment processing
       await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -234,7 +340,7 @@ export default function Checkout() {
         <div className="container mx-auto px-4">
           <h1 className="font-display text-3xl md:text-4xl font-bold mb-8">Checkout</h1>
 
-          <form onSubmit={handleSubmit}>
+          <form ref={formRef} onSubmit={handleSubmit}>
             <div className="grid lg:grid-cols-3 gap-8">
               {/* Left - Form */}
               <div className="lg:col-span-2 space-y-8">
@@ -248,10 +354,86 @@ export default function Checkout() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="phone">Phone</Label>
-                      <Input id="phone" name="phone" type="tel" placeholder="+91 98765 43210" required />
+                      <Input
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        placeholder="+91 98765 43210"
+                        required
+                      />
                     </div>
                   </div>
                 </div>
+
+                {/* Saved Addresses */}
+                {savedAddresses.length > 0 && (
+                  <div className="bg-card border border-border rounded-xl p-6">
+                    <h2 className="font-display text-xl font-semibold mb-6">Your Saved Addresses</h2>
+                    <RadioGroup
+                      value={isAddingNewAddress ? "new" : (selectedAddressIndex?.toString() ?? "-1")}
+                      onValueChange={(value) => {
+                        if (value === "new") {
+                          setIsAddingNewAddress(true);
+                          setSelectedAddressIndex(null);
+                        } else {
+                          setIsAddingNewAddress(false);
+                          const index = parseInt(value);
+                          setSelectedAddressIndex(index);
+                          // Populate form fields
+                          const address = savedAddresses[index];
+                          if (address && formRef.current) {
+                            (formRef.current.querySelector('input[name="address"]') as HTMLInputElement).value = address.street || '';
+                            (formRef.current.querySelector('input[name="city"]') as HTMLInputElement).value = address.city || '';
+                            (formRef.current.querySelector('input[name="state"]') as HTMLInputElement).value = address.state || '';
+                            (formRef.current.querySelector('input[name="pincode"]') as HTMLInputElement).value = address.zipCode || '';
+                            (formRef.current.querySelector('input[name="phone"]') as HTMLInputElement).value = address.phone || '';
+                          }
+                        }
+                      }}
+                    >
+                      <div className="space-y-3">
+                        {savedAddresses.map((address, index) => (
+                          <label
+                            key={index}
+                            className={`flex items-start gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${
+                              selectedAddressIndex === index && !isAddingNewAddress
+                                ? "border-primary bg-primary/5"
+                                : "border-border hover:border-primary/50"
+                            }`}
+                          >
+                            <RadioGroupItem value={index.toString()} className="mt-1" />
+                            <div className="flex-1">
+                              <p className="font-medium text-sm">
+                                {address.street && `${address.street}`}
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                {address.city && `${address.city}, `}
+                                {address.state && `${address.state} `}
+                                {address.zipCode}
+                              </p>
+                              {address.phone && <p className="text-xs text-muted-foreground">Phone: {address.phone}</p>}
+                            </div>
+                          </label>
+                        ))}
+
+                        {/* Add New Address Option */}
+                        <label
+                          className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${
+                            isAddingNewAddress
+                              ? "border-primary bg-primary/5"
+                              : "border-border hover:border-primary/50"
+                          }`}
+                        >
+                          <RadioGroupItem value="new" />
+                          <div className="flex items-center gap-2">
+                            <Plus className="h-4 w-4" />
+                            <span className="font-medium text-sm">Add New Address</span>
+                          </div>
+                        </label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                )}
 
                 {/* Shipping Address */}
                 <div className="bg-card border border-border rounded-xl p-6">
@@ -260,16 +442,31 @@ export default function Checkout() {
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="firstName">First Name</Label>
-                        <Input id="firstName" name="firstName" placeholder="First name" required />
+                        <Input
+                          id="firstName"
+                          name="firstName"
+                          placeholder="First name"
+                          required
+                        />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="lastName">Last Name</Label>
-                        <Input id="lastName" name="lastName" placeholder="Last name" required />
+                        <Input
+                          id="lastName"
+                          name="lastName"
+                          placeholder="Last name"
+                          required
+                        />
                       </div>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="address">Address</Label>
-                      <Input id="address" name="address" placeholder="Street address" required />
+                      <Input
+                        id="address"
+                        name="address"
+                        placeholder="Street address"
+                        required
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="apartment">Apartment, suite, etc. (optional)</Label>
@@ -278,15 +475,30 @@ export default function Checkout() {
                     <div className="grid sm:grid-cols-3 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="city">City</Label>
-                        <Input id="city" name="city" placeholder="City" required />
+                        <Input
+                          id="city"
+                          name="city"
+                          placeholder="City"
+                          required
+                        />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="state">State</Label>
-                        <Input id="state" name="state" placeholder="State" required />
+                        <Input
+                          id="state"
+                          name="state"
+                          placeholder="State"
+                          required
+                        />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="pincode">PIN Code</Label>
-                        <Input id="pincode" name="pincode" placeholder="PIN code" required />
+                        <Input
+                          id="pincode"
+                          name="pincode"
+                          placeholder="PIN code"
+                          required
+                        />
                       </div>
                     </div>
                   </div>

@@ -11,6 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { format } from "date-fns";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import InvoiceDisplay from "@/components/InvoiceDisplay";
 
 const statusColors = {
   confirmed: "bg-blue-500/10 text-blue-600 border-blue-500/20",
@@ -21,9 +22,11 @@ const statusColors = {
 
 export default function OrderHistory() {
   const { orders, isLoading } = useOrders();
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading, token } = useAuth();
   const navigate = useNavigate();
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [selectedOrderForInvoice, setSelectedOrderForInvoice] = useState<string | null>(null);
+  const [showInvoice, setShowInvoice] = useState(false);
 
   // Show loading state while checking auth
   if (authLoading) {
@@ -222,6 +225,16 @@ export default function OrderHistory() {
         </div>
       </main>
 
+      {/* Invoice Display */}
+      {selectedOrderForInvoice && (
+        <InvoiceDisplay
+          orderId={selectedOrderForInvoice}
+          open={showInvoice}
+          onOpenChange={setShowInvoice}
+          token={token}
+        />
+      )}
+
       {/* Order Details Modal */}
       <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
         <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
@@ -373,6 +386,15 @@ export default function OrderHistory() {
               </div>
 
               <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setSelectedOrderForInvoice(selectedOrder._id || selectedOrder.id);
+                    setShowInvoice(true);
+                  }}
+                >
+                  View Invoice
+                </Button>
                 <Button variant="outline" onClick={() => setSelectedOrder(null)}>
                   Close
                 </Button>

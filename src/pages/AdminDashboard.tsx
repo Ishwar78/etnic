@@ -27,6 +27,8 @@ import AdminCouponManagement from "@/components/AdminCouponManagement";
 import AdminHeroMediaManagement from "@/components/AdminHeroMediaManagement";
 import PaymentManagement from "@/components/PaymentManagement";
 import SizeChartManagement from "@/components/SizeChartManagement";
+import InvoiceDisplay from "@/components/InvoiceDisplay";
+import AdminInvoiceManagement from "@/components/AdminInvoiceManagement";
 
 interface DashboardStats {
   totalUsers: number;
@@ -113,6 +115,7 @@ export default function AdminDashboard() {
   const [newOrderStatus, setNewOrderStatus] = useState<string | null>(null);
   const [trackingId, setTrackingId] = useState<string>("");
   const [updatingTrackingId, setUpdatingTrackingId] = useState(false);
+  const [showInvoice, setShowInvoice] = useState(false);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -409,6 +412,7 @@ export default function AdminDashboard() {
               <TabsTrigger value="coupons">Coupons</TabsTrigger>
               <TabsTrigger value="banners">Banners</TabsTrigger>
               <TabsTrigger value="payments">Payments</TabsTrigger>
+              <TabsTrigger value="invoices">Invoices</TabsTrigger>
               <TabsTrigger value="size-charts">Size Charts</TabsTrigger>
               <TabsTrigger value="users">Users</TabsTrigger>
               <TabsTrigger value="orders">Orders</TabsTrigger>
@@ -496,6 +500,11 @@ export default function AdminDashboard() {
             {/* Payments Tab */}
             <TabsContent value="payments" className="space-y-6">
               <PaymentManagement />
+            </TabsContent>
+
+            {/* Invoice Settings Tab */}
+            <TabsContent value="invoices" className="space-y-6">
+              <AdminInvoiceManagement />
             </TabsContent>
 
             {/* Size Charts Tab */}
@@ -699,6 +708,16 @@ export default function AdminDashboard() {
           </Tabs>
         </main>
       </div>
+
+      {/* Invoice Display */}
+      {selectedOrder && (
+        <InvoiceDisplay
+          orderId={selectedOrder._id}
+          open={showInvoice}
+          onOpenChange={setShowInvoice}
+          token={token}
+        />
+      )}
 
       {/* Order Details Dialog */}
       <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
@@ -973,6 +992,12 @@ export default function AdminDashboard() {
               </div>
 
               <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowInvoice(true)}
+                >
+                  View Invoice
+                </Button>
                 <Button variant="outline" onClick={() => {
                   setSelectedOrder(null);
                   setNewOrderStatus(null);
