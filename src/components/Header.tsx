@@ -388,6 +388,12 @@ export default function Header() {
                         Orders
                       </Button>
                     </Link>
+                    <Link to="/track-order" onClick={() => setIsMobileMenuOpen(false)} className="flex-1">
+                      <Button variant="outline" size="sm" className="w-full gap-2">
+                        <Truck className="h-4 w-4" />
+                        Track
+                      </Button>
+                    </Link>
                     <Button
                       variant="ghost"
                       size="sm"
