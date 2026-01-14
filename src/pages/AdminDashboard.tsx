@@ -975,6 +975,12 @@ export default function AdminDashboard() {
               </div>
 
               <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowInvoice(true)}
+                >
+                  View Invoice
+                </Button>
                 <Button variant="outline" onClick={() => {
                   setSelectedOrder(null);
                   setNewOrderStatus(null);
