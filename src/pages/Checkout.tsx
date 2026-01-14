@@ -305,7 +305,7 @@ export default function Checkout() {
         <div className="container mx-auto px-4">
           <h1 className="font-display text-3xl md:text-4xl font-bold mb-8">Checkout</h1>
 
-          <form onSubmit={handleSubmit}>
+          <form ref={formRef} onSubmit={handleSubmit}>
             <div className="grid lg:grid-cols-3 gap-8">
               {/* Left - Form */}
               <div className="lg:col-span-2 space-y-8">
