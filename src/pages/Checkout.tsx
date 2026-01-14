@@ -244,11 +244,11 @@ export default function Checkout() {
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="email">Email</Label>
-                      <Input id="email" type="email" placeholder="your@email.com" required />
+                      <Input id="email" name="email" type="email" placeholder="your@email.com" required />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="phone">Phone</Label>
-                      <Input id="phone" type="tel" placeholder="+91 98765 43210" required />
+                      <Input id="phone" name="phone" type="tel" placeholder="+91 98765 43210" required />
                     </div>
                   </div>
                 </div>
@@ -260,33 +260,33 @@ export default function Checkout() {
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="firstName">First Name</Label>
-                        <Input id="firstName" placeholder="First name" required />
+                        <Input id="firstName" name="firstName" placeholder="First name" required />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="lastName">Last Name</Label>
-                        <Input id="lastName" placeholder="Last name" required />
+                        <Input id="lastName" name="lastName" placeholder="Last name" required />
                       </div>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="address">Address</Label>
-                      <Input id="address" placeholder="Street address" required />
+                      <Input id="address" name="address" placeholder="Street address" required />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="apartment">Apartment, suite, etc. (optional)</Label>
-                      <Input id="apartment" placeholder="Apartment, suite, etc." />
+                      <Input id="apartment" name="apartment" placeholder="Apartment, suite, etc." />
                     </div>
                     <div className="grid sm:grid-cols-3 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="city">City</Label>
-                        <Input id="city" placeholder="City" required />
+                        <Input id="city" name="city" placeholder="City" required />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="state">State</Label>
-                        <Input id="state" placeholder="State" required />
+                        <Input id="state" name="state" placeholder="State" required />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="pincode">PIN Code</Label>
-                        <Input id="pincode" placeholder="PIN code" required />
+                        <Input id="pincode" name="pincode" placeholder="PIN code" required />
                       </div>
                     </div>
                   </div>

@@ -67,6 +67,22 @@ const productSchema = new mongoose.Schema({
       default: Date.now
     }
   }],
+  isNew: {
+    type: Boolean,
+    default: false
+  },
+  isBestseller: {
+    type: Boolean,
+    default: false
+  },
+  isSummer: {
+    type: Boolean,
+    default: false
+  },
+  isWinter: {
+    type: Boolean,
+    default: false
+  },
   isActive: {
     type: Boolean,
     default: true

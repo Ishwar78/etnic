@@ -253,6 +253,22 @@ router.get('/orders', async (req, res) => {
   }
 });
 
+// Get pending orders count
+router.get('/orders/count/pending', async (req, res) => {
+  try {
+    const pendingCount = await Order.countDocuments({ status: 'pending' });
+
+    res.json({
+      success: true,
+      pendingCount,
+      totalPending: pendingCount
+    });
+  } catch (error) {
+    console.error('Get pending orders count error:', error);
+    res.status(500).json({ error: 'Failed to fetch pending orders count' });
+  }
+});
+
 // Update order status and tracking ID
 router.put('/orders/:id', async (req, res) => {
   try {
@@ -365,6 +381,7 @@ router.put('/payment-settings', async (req, res) => {
       upiAddress,
       upiQrCode,
       upiName,
+      codEnabled,
       codePaymentEnabled,
       paymentCodes
     } = req.body;
@@ -381,6 +398,7 @@ router.put('/payment-settings', async (req, res) => {
     if (upiAddress) paymentSettings.upiAddress = upiAddress;
     if (upiQrCode) paymentSettings.upiQrCode = upiQrCode;
     if (upiName) paymentSettings.upiName = upiName;
+    if (codEnabled !== undefined) paymentSettings.codEnabled = codEnabled;
     if (codePaymentEnabled !== undefined) paymentSettings.codePaymentEnabled = codePaymentEnabled;
     if (paymentCodes) paymentSettings.paymentCodes = paymentCodes;
 

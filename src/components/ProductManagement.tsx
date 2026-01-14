@@ -241,6 +241,10 @@ export default function ProductManagement() {
         sizes,
         colors,
         description: formData.description || formData.name,
+        isNew: formData.isNew || false,
+        isBestseller: formData.isBestseller || false,
+        isSummer: formData.isSummer || false,
+        isWinter: formData.isWinter || false,
       };
 
       if (isAddMode) {

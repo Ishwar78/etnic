@@ -14,7 +14,7 @@ router.post('/', authMiddleware, async (req, res) => {
     }
 
     const ticket = new Ticket({
-      userId: req.user.id,
+      userId: req.user._id,
       subject,
       category,
       message,
@@ -61,7 +61,7 @@ router.get('/:id', authMiddleware, async (req, res) => {
     }
 
     // Check if user owns this ticket or is admin
-    if (ticket.userId.toString() !== req.user.id && req.user.role !== 'admin') {
+    if (ticket.userId.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
       return res.status(403).json({ error: 'Unauthorized' });
     }
 
@@ -91,7 +91,7 @@ router.post('/:id/respond', authMiddleware, async (req, res) => {
     }
 
     // Check if user owns this ticket
-    if (ticket.userId.toString() !== req.user.id) {
+    if (ticket.userId.toString() !== req.user._id.toString()) {
       return res.status(403).json({ error: 'Unauthorized' });
     }
 

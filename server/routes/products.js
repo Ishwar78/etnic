@@ -127,6 +127,10 @@ router.post('/', authMiddleware, adminMiddleware, async (req, res) => {
       colors,
       stock,
       rating,
+      isNew,
+      isBestseller,
+      isSummer,
+      isWinter,
     } = req.body;
 
     if (!name || !description || !price || !category || !image) {
@@ -154,6 +158,10 @@ router.post('/', authMiddleware, adminMiddleware, async (req, res) => {
       colors: colors || [],
       stock: stock || 0,
       rating: rating || 0,
+      isNew: isNew || false,
+      isBestseller: isBestseller || false,
+      isSummer: isSummer || false,
+      isWinter: isWinter || false,
       isActive: true,
     });
 
@@ -184,6 +192,10 @@ router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
       stock,
       rating,
       isActive,
+      isNew,
+      isBestseller,
+      isSummer,
+      isWinter,
     } = req.body;
 
     // Get current product to check if name changed
@@ -220,6 +232,10 @@ router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
         stock,
         rating,
         isActive,
+        isNew,
+        isBestseller,
+        isSummer,
+        isWinter,
         updatedAt: new Date(),
       },
       { new: true }

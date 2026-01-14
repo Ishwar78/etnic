@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Home,
@@ -24,6 +24,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SidebarItem {
   title: string;
@@ -81,7 +83,37 @@ const adminSections: SidebarItem[] = [
 export default function AdminSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const [pendingOrderCount, setPendingOrderCount] = useState(0);
   const location = useLocation();
+  const { token } = useAuth();
+
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+  // Fetch pending orders count
+  useEffect(() => {
+    const fetchPendingCount = async () => {
+      try {
+        const response = await fetch(`${API_URL}/admin/orders/count/pending`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        const data = await response.json();
+        if (data.success) {
+          setPendingOrderCount(data.pendingCount || 0);
+        }
+      } catch (error) {
+        console.error('Error fetching pending orders count:', error);
+      }
+    };
+
+    if (token) {
+      fetchPendingCount();
+      // Refresh count every 30 seconds
+      const interval = setInterval(fetchPendingCount, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [token, API_URL]);
 
   const toggleExpand = (title: string) => {
     setExpandedItems((prev) =>
@@ -143,7 +175,19 @@ export default function AdminSidebar() {
                   title={collapsed ? item.title : undefined}
                 >
                   <item.icon className="h-5 w-5 flex-shrink-0" />
-                  {!collapsed && <span>{item.title}</span>}
+                  {!collapsed && (
+                    <div className="flex items-center justify-between flex-1">
+                      <span>{item.title}</span>
+                      {item.title === "Orders" && pendingOrderCount > 0 && (
+                        <Badge
+                          variant="destructive"
+                          className="ml-auto h-5 min-w-5 flex items-center justify-center px-1.5"
+                        >
+                          {pendingOrderCount}
+                        </Badge>
+                      )}
+                    </div>
+                  )}
                 </Link>
               ))}
             </nav>
