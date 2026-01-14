@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ChevronRight, Truck, Shield, CreditCard, CheckCircle2, Loader2, X, DollarSign } from "lucide-react";
+import { ChevronRight, Truck, Shield, CheckCircle2, Loader2, X, DollarSign } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
