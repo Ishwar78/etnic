@@ -45,6 +45,7 @@ export default function PaymentManagement() {
     upiAddress: '',
     upiQrCode: '',
     upiName: 'Vasstra Payments',
+    codEnabled: true,
     codePaymentEnabled: true,
     paymentCodes: []
   });
