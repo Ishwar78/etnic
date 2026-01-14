@@ -343,69 +343,60 @@ export default function Checkout() {
                 {/* Payment Method */}
                 <div className="bg-card border border-border rounded-xl p-6">
                   <h2 className="font-display text-xl font-semibold mb-6">Payment Method</h2>
-                  <RadioGroup value={paymentMethod} onValueChange={(value) => {
-                    setPaymentMethod(value);
-                    if (value !== "upi") {
-                      setUpiTransactionId("");
-                    }
-                  }}>
-                    <div className="space-y-3">
-                      <label
-                        htmlFor="card"
-                        className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-colors ${
-                          paymentMethod === "card" ? "border-primary bg-primary/5" : "border-border"
-                        }`}
-                      >
-                        <RadioGroupItem value="card" id="card" />
-                        <CreditCard className="h-5 w-5 text-muted-foreground" />
-                        <div className="flex-1">
-                          <span className="font-medium">Credit / Debit Card</span>
-                          <p className="text-sm text-muted-foreground">Pay securely with your card</p>
-                        </div>
-                      </label>
-                      <label
-                        htmlFor="upi"
-                        className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-colors ${
-                          paymentMethod === "upi" ? "border-primary bg-primary/5" : "border-border"
-                        }`}
-                      >
-                        <RadioGroupItem value="upi" id="upi" />
-                        <div className="h-5 w-5 flex items-center justify-center text-muted-foreground font-bold text-xs">
-                          UPI
-                        </div>
-                        <div className="flex-1">
-                          <span className="font-medium">UPI Payment</span>
-                          <p className="text-sm text-muted-foreground">Pay with Google Pay, PhonePe, Paytm</p>
-                        </div>
-                      </label>
-                      <label
-                        htmlFor="netbanking"
-                        className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-colors ${
-                          paymentMethod === "netbanking" ? "border-primary bg-primary/5" : "border-border"
-                        }`}
-                      >
-                        <RadioGroupItem value="netbanking" id="netbanking" />
-                        <Shield className="h-5 w-5 text-muted-foreground" />
-                        <div className="flex-1">
-                          <span className="font-medium">Net Banking</span>
-                          <p className="text-sm text-muted-foreground">All major banks supported</p>
-                        </div>
-                      </label>
-                      <label
-                        htmlFor="cod"
-                        className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-colors ${
-                          paymentMethod === "cod" ? "border-primary bg-primary/5" : "border-border"
-                        }`}
-                      >
-                        <RadioGroupItem value="cod" id="cod" />
-                        <DollarSign className="h-5 w-5 text-muted-foreground" />
-                        <div className="flex-1">
-                          <span className="font-medium">Cash on Delivery (COD)</span>
-                          <p className="text-sm text-muted-foreground">Pay when you receive your order</p>
-                        </div>
-                      </label>
+                  {isLoadingPaymentSettings ? (
+                    <div className="text-center py-8">
+                      <p className="text-muted-foreground">Loading payment options...</p>
                     </div>
-                  </RadioGroup>
+                  ) : (!paymentSettings?.upiEnabled) ? (
+                    <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
+                      <p className="text-sm text-yellow-600">
+                        ⚠ No payment options available. Please contact support.
+                      </p>
+                    </div>
+                  ) : (
+                    <RadioGroup value={paymentMethod} onValueChange={(value) => {
+                      setPaymentMethod(value);
+                      if (value !== "upi") {
+                        setUpiTransactionId("");
+                      }
+                    }}>
+                      <div className="space-y-3">
+                        {/* UPI Payment - Always show if enabled */}
+                        {paymentSettings?.upiEnabled && (
+                          <label
+                            htmlFor="upi"
+                            className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-colors ${
+                              paymentMethod === "upi" ? "border-primary bg-primary/5" : "border-border"
+                            }`}
+                          >
+                            <RadioGroupItem value="upi" id="upi" />
+                            <div className="h-5 w-5 flex items-center justify-center text-muted-foreground font-bold text-xs">
+                              UPI
+                            </div>
+                            <div className="flex-1">
+                              <span className="font-medium">UPI Payment</span>
+                              <p className="text-sm text-muted-foreground">Pay with Google Pay, PhonePe, Paytm</p>
+                            </div>
+                          </label>
+                        )}
+
+                        {/* COD - Always available */}
+                        <label
+                          htmlFor="cod"
+                          className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-colors ${
+                            paymentMethod === "cod" ? "border-primary bg-primary/5" : "border-border"
+                          }`}
+                        >
+                          <RadioGroupItem value="cod" id="cod" />
+                          <DollarSign className="h-5 w-5 text-muted-foreground" />
+                          <div className="flex-1">
+                            <span className="font-medium">Cash on Delivery (COD)</span>
+                            <p className="text-sm text-muted-foreground">Pay when you receive your order</p>
+                          </div>
+                        </label>
+                      </div>
+                    </RadioGroup>
+                  )}
 
                   {/* COD Details */}
                   {paymentMethod === "cod" && (
