@@ -702,6 +702,16 @@ export default function AdminDashboard() {
         </main>
       </div>
 
+      {/* Invoice Display */}
+      {selectedOrder && (
+        <InvoiceDisplay
+          orderId={selectedOrder._id}
+          open={showInvoice}
+          onOpenChange={setShowInvoice}
+          token={token}
+        />
+      )}
+
       {/* Order Details Dialog */}
       <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
         <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
