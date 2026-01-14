@@ -91,7 +91,7 @@ router.post('/:id/respond', authMiddleware, async (req, res) => {
     }
 
     // Check if user owns this ticket
-    if (ticket.userId.toString() !== req.user.id) {
+    if (ticket.userId.toString() !== req.user._id.toString()) {
       return res.status(403).json({ error: 'Unauthorized' });
     }
 
