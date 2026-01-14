@@ -133,8 +133,17 @@ router.post('/', authMiddleware, adminMiddleware, async (req, res) => {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
+    const slug = generateSlug(name);
+
+    // Check if slug already exists
+    const existingProduct = await Product.findOne({ slug });
+    if (existingProduct) {
+      return res.status(400).json({ error: 'A product with similar name already exists. Please use a different name.' });
+    }
+
     const product = new Product({
       name,
+      slug,
       description,
       price,
       originalPrice: originalPrice || price,
