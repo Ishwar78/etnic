@@ -453,7 +453,9 @@ export default function UserDashboard() {
                       <Calendar className="h-4 w-4" />
                       Member Since
                     </label>
-                    <p className="text-lg">{format(new Date(user.createdAt), "MMMM yyyy")}</p>
+                    <p className="text-lg">
+                      {user.createdAt ? format(new Date(user.createdAt), "MMMM yyyy") : "Not available"}
+                    </p>
                   </div>
                 </div>
               </>
