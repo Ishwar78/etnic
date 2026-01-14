@@ -431,7 +431,6 @@ export default function Checkout() {
                           name="firstName"
                           placeholder="First name"
                           required
-                          defaultValue={user?.name?.split(' ')[0] || ''}
                         />
                       </div>
                       <div className="space-y-2">
@@ -441,7 +440,6 @@ export default function Checkout() {
                           name="lastName"
                           placeholder="Last name"
                           required
-                          defaultValue={user?.name?.split(' ').slice(1).join(' ') || ''}
                         />
                       </div>
                     </div>
@@ -452,7 +450,6 @@ export default function Checkout() {
                         name="address"
                         placeholder="Street address"
                         required
-                        defaultValue={selectedAddressIndex !== null && savedAddresses[selectedAddressIndex] ? savedAddresses[selectedAddressIndex].street || '' : ''}
                       />
                     </div>
                     <div className="space-y-2">
@@ -467,7 +464,6 @@ export default function Checkout() {
                           name="city"
                           placeholder="City"
                           required
-                          defaultValue={selectedAddressIndex !== null && savedAddresses[selectedAddressIndex] ? savedAddresses[selectedAddressIndex].city || '' : ''}
                         />
                       </div>
                       <div className="space-y-2">
@@ -477,7 +473,6 @@ export default function Checkout() {
                           name="state"
                           placeholder="State"
                           required
-                          defaultValue={selectedAddressIndex !== null && savedAddresses[selectedAddressIndex] ? savedAddresses[selectedAddressIndex].state || '' : ''}
                         />
                       </div>
                       <div className="space-y-2">
@@ -487,7 +482,6 @@ export default function Checkout() {
                           name="pincode"
                           placeholder="PIN code"
                           required
-                          defaultValue={selectedAddressIndex !== null && savedAddresses[selectedAddressIndex] ? savedAddresses[selectedAddressIndex].zipCode || '' : ''}
                         />
                       </div>
                     </div>
