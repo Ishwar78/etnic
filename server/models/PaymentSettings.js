@@ -21,6 +21,12 @@ const paymentSettingsSchema = new mongoose.Schema({
     trim: true
   },
 
+  // Cash on Delivery Settings
+  codEnabled: {
+    type: Boolean,
+    default: true
+  },
+
   // Code/Reference Payment Settings (for codes like phone pay, paytm)
   codePaymentEnabled: {
     type: Boolean,

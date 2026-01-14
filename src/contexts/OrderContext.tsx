@@ -100,7 +100,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
           state: orderData.shippingAddress?.state,
           zipCode: orderData.shippingAddress?.pincode || orderData.shippingAddress?.zipCode,
           country: orderData.shippingAddress?.country || 'India',
-          phone: orderData.shippingAddress?.phone,
+          phone: orderData.shippingAddress?.phone || '',
         },
         paymentMethod,
         paymentDetails,

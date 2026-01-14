@@ -7,6 +7,7 @@ import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Product } from "@/data/products";
+import { normalizeProduct } from "@/lib/normalizeProduct";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -39,7 +40,8 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
       const response = await fetch(`${API_URL}/products?limit=100`);
       if (response.ok) {
         const data = await response.json();
-        setProducts(data.products || []);
+        const normalizedProducts = (data.products || []).map((p: any) => normalizeProduct(p));
+        setProducts(normalizedProducts);
       }
     } catch (error) {
       console.error('Error fetching products:', error);

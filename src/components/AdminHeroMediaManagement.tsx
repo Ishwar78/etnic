@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Trash2, Edit2, Plus, Play } from "lucide-react";
+import { Trash2, Edit2, Plus, Play, Upload, X } from "lucide-react";
 import { getVideoSource } from "@/lib/videoUtils";
 
 interface HeroMedia {
@@ -42,6 +42,8 @@ export default function AdminHeroMediaManagement() {
     ctaLink: '',
     order: 0,
   });
+  const [mediaPreview, setMediaPreview] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -144,6 +146,7 @@ export default function AdminHeroMediaManagement() {
       ctaLink: item.ctaLink,
       order: item.order,
     });
+    setMediaPreview(item.mediaUrl);
     setEditingId(item._id);
     setShowForm(true);
   };
@@ -181,6 +184,38 @@ export default function AdminHeroMediaManagement() {
     }
   };
 
+  // Handle file upload
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result as string;
+      setFormData({ ...formData, mediaUrl: base64 });
+      setMediaPreview(base64);
+      setUploadProgress(100);
+
+      toast({
+        title: 'Success',
+        description: 'File uploaded successfully',
+      });
+
+      // Reset progress after 2 seconds
+      setTimeout(() => setUploadProgress(0), 2000);
+    };
+
+    reader.onerror = () => {
+      toast({
+        title: 'Error',
+        description: 'Failed to upload file',
+        variant: 'destructive',
+      });
+    };
+
+    reader.readAsDataURL(file);
+  };
+
   // Reset form
   const resetForm = () => {
     setFormData({
@@ -193,6 +228,8 @@ export default function AdminHeroMediaManagement() {
       ctaLink: '',
       order: 0,
     });
+    setMediaPreview(null);
+    setUploadProgress(0);
     setEditingId(null);
     setShowForm(false);
   };
@@ -272,15 +309,86 @@ export default function AdminHeroMediaManagement() {
                 </Select>
               </div>
 
+              {/* File Upload */}
+              <div className="space-y-2">
+                <Label htmlFor="media-upload" className="text-foreground">Upload Media File (or enter URL below)</Label>
+                <div className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:bg-muted/50 transition-colors relative overflow-hidden">
+                  <input
+                    type="file"
+                    id="media-upload"
+                    accept={formData.mediaType === 'video' ? 'video/*,.mp4,.webm,.mov' : formData.mediaType === 'gif' ? 'image/gif' : 'image/*'}
+                    onChange={handleFileUpload}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                  {mediaPreview ? (
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium text-green-600">✓ File Selected</p>
+                      <p className="text-xs text-muted-foreground">Click to change</p>
+                      {uploadProgress > 0 && uploadProgress < 100 && (
+                        <div className="w-full bg-muted rounded-full h-1 mt-2">
+                          <div
+                            className="bg-primary h-1 rounded-full transition-all"
+                            style={{ width: `${uploadProgress}%` }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <Upload className="h-6 w-6 mx-auto text-muted-foreground" />
+                      <p className="text-sm font-medium">Upload Media</p>
+                      <p className="text-xs text-muted-foreground">
+                        {formData.mediaType === 'image' && 'PNG, JPG up to 10MB'}
+                        {formData.mediaType === 'gif' && 'GIF up to 10MB'}
+                        {formData.mediaType === 'video' && 'MP4, WebM up to 100MB'}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Media Preview */}
+              {mediaPreview && (
+                <div className="space-y-2">
+                  <Label className="text-foreground">Media Preview</Label>
+                  <div className="rounded-lg overflow-hidden bg-muted max-w-xs">
+                    {formData.mediaType === 'image' || formData.mediaType === 'gif' ? (
+                      <img
+                        src={mediaPreview}
+                        alt="Preview"
+                        className="w-full h-auto max-h-64 object-cover"
+                      />
+                    ) : (
+                      <video
+                        src={mediaPreview}
+                        className="w-full h-auto max-h-64 object-cover"
+                        controls
+                      />
+                    )}
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setFormData({ ...formData, mediaUrl: '' });
+                      setMediaPreview(null);
+                    }}
+                  >
+                    <X className="h-3 w-3 mr-1" />
+                    Remove
+                  </Button>
+                </div>
+              )}
+
               {/* Media URL */}
               <div className="space-y-2">
-                <Label htmlFor="mediaUrl" className="text-foreground">Media URL *</Label>
+                <Label htmlFor="mediaUrl" className="text-foreground">Or Enter Media URL</Label>
                 <Input
                   id="mediaUrl"
-                  placeholder="YouTube, Instagram, or direct video link"
+                  placeholder="YouTube, Instagram, or direct video/image link"
                   value={formData.mediaUrl}
                   onChange={(e) => setFormData({ ...formData, mediaUrl: e.target.value })}
-                  required
                 />
                 <div className="text-xs text-muted-foreground space-y-1 mt-2 p-2 bg-muted rounded">
                   <p className="font-semibold text-foreground">How to add videos:</p>

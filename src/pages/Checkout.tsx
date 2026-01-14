@@ -121,6 +121,7 @@ export default function Checkout() {
         city: formData.get("city") as string,
         state: formData.get("state") as string,
         pincode: formData.get("pincode") as string,
+        phone: formData.get("phone") as string,
       };
 
       // Simulate payment processing
@@ -195,7 +196,7 @@ export default function Checkout() {
               </p>
               <div className="space-y-3">
                 <Button asChild className="w-full">
-                  <Link to="/orders">View Order History</Link>
+                  <Link to="/dashboard?tab=orders">My Dashboard</Link>
                 </Button>
                 <Button variant="outline" asChild className="w-full">
                   <Link to="/shop">Continue Shopping</Link>
@@ -347,9 +348,9 @@ export default function Checkout() {
                     <div className="text-center py-8">
                       <p className="text-muted-foreground">Loading payment options...</p>
                     </div>
-                  ) : (!paymentSettings?.upiEnabled) ? (
-                    <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
-                      <p className="text-sm text-yellow-600">
+                  ) : (!paymentSettings?.upiEnabled && !paymentSettings?.codEnabled) ? (
+                    <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
+                      <p className="text-sm text-red-600">
                         ⚠ No payment options available. Please contact support.
                       </p>
                     </div>
@@ -361,7 +362,7 @@ export default function Checkout() {
                       }
                     }}>
                       <div className="space-y-3">
-                        {/* UPI Payment - Always show if enabled */}
+                        {/* UPI Payment - Show if enabled */}
                         {paymentSettings?.upiEnabled && (
                           <label
                             htmlFor="upi"
@@ -380,26 +381,37 @@ export default function Checkout() {
                           </label>
                         )}
 
-                        {/* COD - Always available */}
-                        <label
-                          htmlFor="cod"
-                          className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-colors ${
-                            paymentMethod === "cod" ? "border-primary bg-primary/5" : "border-border"
-                          }`}
-                        >
-                          <RadioGroupItem value="cod" id="cod" />
-                          <DollarSign className="h-5 w-5 text-muted-foreground" />
-                          <div className="flex-1">
-                            <span className="font-medium">Cash on Delivery (COD)</span>
-                            <p className="text-sm text-muted-foreground">Pay when you receive your order</p>
+                        {/* COD - Show if enabled */}
+                        {paymentSettings?.codEnabled && (
+                          <label
+                            htmlFor="cod"
+                            className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-colors ${
+                              paymentMethod === "cod" ? "border-primary bg-primary/5" : "border-border"
+                            }`}
+                          >
+                            <RadioGroupItem value="cod" id="cod" />
+                            <DollarSign className="h-5 w-5 text-muted-foreground" />
+                            <div className="flex-1">
+                              <span className="font-medium">Cash on Delivery (COD)</span>
+                              <p className="text-sm text-muted-foreground">Pay when you receive your order</p>
+                            </div>
+                          </label>
+                        )}
+
+                        {/* No payment options available */}
+                        {!paymentSettings?.upiEnabled && !paymentSettings?.codEnabled && (
+                          <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
+                            <p className="text-sm text-red-600">
+                              ⚠ No payment options available. Please contact support.
+                            </p>
                           </div>
-                        </label>
+                        )}
                       </div>
                     </RadioGroup>
                   )}
 
                   {/* UPI Payment Details */}
-                  {paymentMethod === "upi" && !isLoadingPaymentSettings && paymentSettings?.upiEnabled && (
+                  {paymentMethod === "upi" && paymentSettings?.upiEnabled && (
                     <div className="mt-6 pt-6 border-t border-border space-y-5">
                       <h3 className="font-semibold text-lg">UPI Payment Instructions</h3>
 
