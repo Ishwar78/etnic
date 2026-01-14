@@ -362,7 +362,7 @@ export default function Checkout() {
                       }
                     }}>
                       <div className="space-y-3">
-                        {/* UPI Payment - Always show if enabled */}
+                        {/* UPI Payment - Show if enabled */}
                         {paymentSettings?.upiEnabled && (
                           <label
                             htmlFor="upi"
@@ -381,20 +381,31 @@ export default function Checkout() {
                           </label>
                         )}
 
-                        {/* COD - Always available */}
-                        <label
-                          htmlFor="cod"
-                          className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-colors ${
-                            paymentMethod === "cod" ? "border-primary bg-primary/5" : "border-border"
-                          }`}
-                        >
-                          <RadioGroupItem value="cod" id="cod" />
-                          <DollarSign className="h-5 w-5 text-muted-foreground" />
-                          <div className="flex-1">
-                            <span className="font-medium">Cash on Delivery (COD)</span>
-                            <p className="text-sm text-muted-foreground">Pay when you receive your order</p>
+                        {/* COD - Show if enabled */}
+                        {paymentSettings?.codEnabled && (
+                          <label
+                            htmlFor="cod"
+                            className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-colors ${
+                              paymentMethod === "cod" ? "border-primary bg-primary/5" : "border-border"
+                            }`}
+                          >
+                            <RadioGroupItem value="cod" id="cod" />
+                            <DollarSign className="h-5 w-5 text-muted-foreground" />
+                            <div className="flex-1">
+                              <span className="font-medium">Cash on Delivery (COD)</span>
+                              <p className="text-sm text-muted-foreground">Pay when you receive your order</p>
+                            </div>
+                          </label>
+                        )}
+
+                        {/* No payment options available */}
+                        {!paymentSettings?.upiEnabled && !paymentSettings?.codEnabled && (
+                          <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
+                            <p className="text-sm text-red-600">
+                              ⚠ No payment options available. Please contact support.
+                            </p>
                           </div>
-                        </label>
+                        )}
                       </div>
                     </RadioGroup>
                   )}
