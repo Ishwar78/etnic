@@ -195,7 +195,7 @@ export default function Checkout() {
               </p>
               <div className="space-y-3">
                 <Button asChild className="w-full">
-                  <Link to="/orders">View Order History</Link>
+                  <Link to="/dashboard?tab=orders">My Dashboard</Link>
                 </Button>
                 <Button variant="outline" asChild className="w-full">
                   <Link to="/shop">Continue Shopping</Link>
