@@ -244,11 +244,11 @@ export default function Checkout() {
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="email">Email</Label>
-                      <Input id="email" type="email" placeholder="your@email.com" required />
+                      <Input id="email" name="email" type="email" placeholder="your@email.com" required />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="phone">Phone</Label>
-                      <Input id="phone" type="tel" placeholder="+91 98765 43210" required />
+                      <Input id="phone" name="phone" type="tel" placeholder="+91 98765 43210" required />
                     </div>
                   </div>
                 </div>
