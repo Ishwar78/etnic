@@ -257,14 +257,11 @@ router.get('/orders', async (req, res) => {
 router.get('/orders/count/pending', async (req, res) => {
   try {
     const pendingCount = await Order.countDocuments({ status: 'pending' });
-    const newCount = await Order.countDocuments({ status: 'new' });
-    const totalPendingAndNew = pendingCount + newCount;
 
     res.json({
       success: true,
       pendingCount,
-      newCount,
-      totalPending: totalPendingAndNew
+      totalPending: pendingCount
     });
   } catch (error) {
     console.error('Get pending orders count error:', error);
