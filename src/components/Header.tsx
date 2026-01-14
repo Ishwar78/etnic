@@ -213,6 +213,12 @@ export default function Header() {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
+                      <Link to="/track-order" className="cursor-pointer">
+                        <Truck className="h-4 w-4 mr-2" />
+                        Track Order
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
                       <Link to="/wishlist" className="cursor-pointer">
                         <Heart className="h-4 w-4 mr-2" />
                         My Wishlist
