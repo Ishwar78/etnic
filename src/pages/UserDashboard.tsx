@@ -15,6 +15,7 @@ import UserSidebar from "@/components/UserSidebar";
 import UserCartSection from "@/components/UserCartSection";
 import UserWishlistSection from "@/components/UserWishlistSection";
 import SupportTicketForm from "@/components/SupportTicketForm";
+import InvoiceDisplay from "@/components/InvoiceDisplay";
 import { format } from "date-fns";
 
 const statusColors: Record<string, string> = {
