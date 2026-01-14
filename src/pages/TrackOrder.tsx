@@ -51,11 +51,21 @@ const statusColors: Record<string, string> = {
 };
 
 export default function TrackOrder() {
+  const [searchParams] = useSearchParams();
   const [trackingId, setTrackingId] = useState("");
   const [order, setOrder] = useState<OrderDetails | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const { toast } = useToast();
+
+  // Auto-track order if tracking ID is provided in URL
+  useEffect(() => {
+    const idFromUrl = searchParams.get('id');
+    if (idFromUrl) {
+      setTrackingId(idFromUrl);
+      handleTrackAuto(idFromUrl);
+    }
+  }, []);
 
   const handleTrack = async (e: React.FormEvent) => {
     e.preventDefault();
