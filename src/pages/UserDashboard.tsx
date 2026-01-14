@@ -34,6 +34,8 @@ export default function UserDashboard() {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "profile");
+  const [selectedOrderForInvoice, setSelectedOrderForInvoice] = useState<string | null>(null);
+  const [showInvoice, setShowInvoice] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
