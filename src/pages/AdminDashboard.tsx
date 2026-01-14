@@ -55,6 +55,7 @@ interface AdminOrder {
   totalAmount: number;
   status: string;
   createdAt: string;
+  trackingId?: string;
   items?: any[];
   shippingAddress?: any;
   paymentMethod?: string;
