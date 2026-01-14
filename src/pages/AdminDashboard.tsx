@@ -502,6 +502,11 @@ export default function AdminDashboard() {
               <PaymentManagement />
             </TabsContent>
 
+            {/* Invoice Settings Tab */}
+            <TabsContent value="invoices" className="space-y-6">
+              <AdminInvoiceManagement />
+            </TabsContent>
+
             {/* Size Charts Tab */}
             <TabsContent value="size-charts" className="space-y-6">
               <SizeChartManagement />
