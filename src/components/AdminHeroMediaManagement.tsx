@@ -146,6 +146,7 @@ export default function AdminHeroMediaManagement() {
       ctaLink: item.ctaLink,
       order: item.order,
     });
+    setMediaPreview(item.mediaUrl);
     setEditingId(item._id);
     setShowForm(true);
   };
