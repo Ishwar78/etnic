@@ -253,6 +253,25 @@ router.get('/orders', async (req, res) => {
   }
 });
 
+// Get pending orders count
+router.get('/orders/count/pending', async (req, res) => {
+  try {
+    const pendingCount = await Order.countDocuments({ status: 'pending' });
+    const newCount = await Order.countDocuments({ status: 'new' });
+    const totalPendingAndNew = pendingCount + newCount;
+
+    res.json({
+      success: true,
+      pendingCount,
+      newCount,
+      totalPending: totalPendingAndNew
+    });
+  } catch (error) {
+    console.error('Get pending orders count error:', error);
+    res.status(500).json({ error: 'Failed to fetch pending orders count' });
+  }
+});
+
 // Update order status and tracking ID
 router.put('/orders/:id', async (req, res) => {
   try {
