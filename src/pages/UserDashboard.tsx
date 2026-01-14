@@ -281,6 +281,19 @@ export default function UserDashboard() {
                           </div>
                         </div>
                       )}
+
+                      {/* View Invoice Button */}
+                      <Button
+                        variant="gold"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedOrderForInvoice(order._id || order.id);
+                          setShowInvoice(true);
+                        }}
+                        className="w-full"
+                      >
+                        View Invoice
+                      </Button>
                     </div>
                   );
                 })}
