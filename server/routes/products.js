@@ -4,6 +4,17 @@ import { authMiddleware, adminMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
 
+// Utility function to generate slug from product name
+function generateSlug(name) {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+    .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+}
+
 // Get all active products (public)
 router.get('/', async (req, res) => {
   try {
