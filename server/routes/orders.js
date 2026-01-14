@@ -87,6 +87,27 @@ router.get('/my-orders', authMiddleware, async (req, res) => {
   }
 });
 
+// Get order by tracking ID (public endpoint)
+router.get('/track/:trackingId', async (req, res) => {
+  try {
+    const order = await Order.findOne({ trackingId: req.params.trackingId })
+      .populate('userId', 'name email phone')
+      .populate('items.productId', 'name price image');
+
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found with this tracking ID' });
+    }
+
+    res.json({
+      success: true,
+      order
+    });
+  } catch (error) {
+    console.error('Error fetching order by tracking ID:', error);
+    res.status(500).json({ error: 'Failed to fetch order' });
+  }
+});
+
 // Get single order
 router.get('/:id', authMiddleware, async (req, res) => {
   try {

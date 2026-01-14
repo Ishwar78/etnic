@@ -253,14 +253,18 @@ router.get('/orders', async (req, res) => {
   }
 });
 
-// Update order status
+// Update order status and tracking ID
 router.put('/orders/:id', async (req, res) => {
   try {
-    const { status } = req.body;
+    const { status, trackingId } = req.body;
+    const updateData = { updatedAt: new Date() };
+
+    if (status) updateData.status = status;
+    if (trackingId) updateData.trackingId = trackingId;
 
     const order = await Order.findByIdAndUpdate(
       req.params.id,
-      { status, updatedAt: new Date() },
+      updateData,
       { new: true }
     ).populate('userId', 'name email');
 

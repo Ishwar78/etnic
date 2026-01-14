@@ -55,6 +55,7 @@ interface AdminOrder {
   totalAmount: number;
   status: string;
   createdAt: string;
+  trackingId?: string;
   items?: any[];
   shippingAddress?: any;
   paymentMethod?: string;
@@ -110,6 +111,8 @@ export default function AdminDashboard() {
   const [selectedOrder, setSelectedOrder] = useState<AdminOrder | null>(null);
   const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null);
   const [newOrderStatus, setNewOrderStatus] = useState<string | null>(null);
+  const [trackingId, setTrackingId] = useState<string>("");
+  const [updatingTrackingId, setUpdatingTrackingId] = useState(false);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -124,9 +127,16 @@ export default function AdminDashboard() {
   // Fetch dashboard stats
   useEffect(() => {
     if (!token) return;
-    
+
     fetchStats();
   }, [token]);
+
+  // Initialize tracking ID when order is selected
+  useEffect(() => {
+    if (selectedOrder && selectedOrder.trackingId) {
+      setTrackingId(selectedOrder.trackingId);
+    }
+  }, [selectedOrder]);
 
   const fetchStats = async () => {
     try {
@@ -292,6 +302,58 @@ export default function AdminDashboard() {
       });
     } finally {
       setUpdatingOrderId(null);
+    }
+  };
+
+  const updateTrackingId = async (orderId: string, newTrackingId: string) => {
+    if (!newTrackingId.trim()) {
+      toast({
+        title: 'Error',
+        description: 'Please enter a tracking ID',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    try {
+      setUpdatingTrackingId(true);
+      const response = await fetch(`${API_URL}/admin/orders/${orderId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ trackingId: newTrackingId }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        toast({
+          title: 'Success',
+          description: 'Tracking ID updated successfully',
+        });
+        // Update the selected order
+        if (selectedOrder && selectedOrder._id === orderId) {
+          setSelectedOrder({ ...selectedOrder, trackingId: newTrackingId });
+        }
+        // Refresh orders
+        fetchOrders();
+      } else {
+        toast({
+          title: 'Error',
+          description: data.error || 'Failed to update tracking ID',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      console.error('Error updating tracking ID:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to update tracking ID',
+        variant: 'destructive',
+      });
+    } finally {
+      setUpdatingTrackingId(false);
     }
   };
 
@@ -833,6 +895,39 @@ export default function AdminDashboard() {
                   </div>
                 )}
 
+                {/* Tracking ID Update */}
+                <div className="bg-muted/30 rounded-lg p-4">
+                  <h3 className="font-semibold text-foreground mb-3">Tracking ID</h3>
+                  <div className="flex gap-3 items-end">
+                    <div className="flex-1">
+                      <Label className="text-foreground mb-2 block">Set Tracking ID</Label>
+                      <Input
+                        placeholder="e.g., TRACK123456 or Shipment ID"
+                        value={trackingId || (selectedOrder?.trackingId as string) || ""}
+                        onChange={(e) => setTrackingId(e.target.value)}
+                      />
+                      <p className="text-xs text-muted-foreground mt-2">
+                        This ID will be shown to customers to track their order
+                      </p>
+                    </div>
+                    <Button
+                      onClick={() => {
+                        updateTrackingId(selectedOrder._id, trackingId || (selectedOrder?.trackingId as string) || "");
+                      }}
+                      disabled={updatingTrackingId || !trackingId?.trim()}
+                    >
+                      {updatingTrackingId ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        'Save'
+                      )}
+                    </Button>
+                  </div>
+                </div>
+
                 {/* Order Status Update */}
                 <div className="bg-muted/30 rounded-lg p-4">
                   <h3 className="font-semibold text-foreground mb-3">Update Order Status</h3>
@@ -881,6 +976,7 @@ export default function AdminDashboard() {
                 <Button variant="outline" onClick={() => {
                   setSelectedOrder(null);
                   setNewOrderStatus(null);
+                  setTrackingId("");
                 }}>
                   Close
                 </Button>

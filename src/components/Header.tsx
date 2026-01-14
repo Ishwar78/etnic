@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Search, Heart, ShoppingBag, Menu, X, ChevronDown, ChevronRight, User, LogOut, Package } from "lucide-react";
+import { Search, Heart, ShoppingBag, Menu, X, ChevronDown, ChevronRight, User, LogOut, Package, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/contexts/CartContext";
@@ -213,6 +213,12 @@ export default function Header() {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
+                      <Link to="/track-order" className="cursor-pointer">
+                        <Truck className="h-4 w-4 mr-2" />
+                        Track Order
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
                       <Link to="/wishlist" className="cursor-pointer">
                         <Heart className="h-4 w-4 mr-2" />
                         My Wishlist
@@ -380,6 +386,12 @@ export default function Header() {
                       <Button variant="outline" size="sm" className="w-full gap-2">
                         <Package className="h-4 w-4" />
                         Orders
+                      </Button>
+                    </Link>
+                    <Link to="/track-order" onClick={() => setIsMobileMenuOpen(false)} className="flex-1">
+                      <Button variant="outline" size="sm" className="w-full gap-2">
+                        <Truck className="h-4 w-4" />
+                        Track
                       </Button>
                     </Link>
                     <Button

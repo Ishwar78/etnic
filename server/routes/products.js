@@ -4,6 +4,17 @@ import { authMiddleware, adminMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
 
+// Utility function to generate slug from product name
+function generateSlug(name) {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+    .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+}
+
 // Get all active products (public)
 router.get('/', async (req, res) => {
   try {
@@ -47,15 +58,34 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Get single product (public)
-router.get('/:id', async (req, res) => {
+// Get single product by slug (public)
+router.get('/slug/:slug', async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id).lean();
-    
+    const product = await Product.findOne({ slug: req.params.slug.toLowerCase() }).lean();
+
     if (!product) {
       return res.status(404).json({ error: 'Product not found' });
     }
-    
+
+    res.json({
+      success: true,
+      product,
+    });
+  } catch (error) {
+    console.error('Error fetching product by slug:', error);
+    res.status(500).json({ error: 'Failed to fetch product' });
+  }
+});
+
+// Get single product by ID (public)
+router.get('/:id', async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id).lean();
+
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
     res.json({
       success: true,
       product,
@@ -103,8 +133,17 @@ router.post('/', authMiddleware, adminMiddleware, async (req, res) => {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
+    const slug = generateSlug(name);
+
+    // Check if slug already exists
+    const existingProduct = await Product.findOne({ slug });
+    if (existingProduct) {
+      return res.status(400).json({ error: 'A product with similar name already exists. Please use a different name.' });
+    }
+
     const product = new Product({
       name,
+      slug,
       description,
       price,
       originalPrice: originalPrice || price,
@@ -147,10 +186,29 @@ router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
       isActive,
     } = req.body;
 
+    // Get current product to check if name changed
+    const currentProduct = await Product.findById(req.params.id);
+    if (!currentProduct) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    // Generate new slug if name changed
+    let slug = currentProduct.slug;
+    if (name && name !== currentProduct.name) {
+      slug = generateSlug(name);
+
+      // Check if new slug already exists (exclude current product)
+      const existingProduct = await Product.findOne({ slug, _id: { $ne: req.params.id } });
+      if (existingProduct) {
+        return res.status(400).json({ error: 'A product with similar name already exists. Please use a different name.' });
+      }
+    }
+
     const product = await Product.findByIdAndUpdate(
       req.params.id,
       {
         name,
+        slug,
         description,
         price,
         originalPrice,

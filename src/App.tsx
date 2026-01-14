@@ -14,6 +14,7 @@ import Shop from "./pages/Shop";
 import ProductDetail from "./pages/ProductDetail";
 import Install from "./pages/Install";
 import Checkout from "./pages/Checkout";
+import TrackOrder from "./pages/TrackOrder";
 import Bestsellers from "./pages/Bestsellers";
 import NewArrivals from "./pages/NewArrivals";
 import EthnicWear from "./pages/EthnicWear";
@@ -62,6 +63,7 @@ const App = () => (
                     <Route path="/product/:id" element={<ProductDetail />} />
                     <Route path="/install" element={<Install />} />
                     <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/track-order" element={<TrackOrder />} />
                     <Route path="/bestsellers" element={<Bestsellers />} />
                     <Route path="/new-arrivals" element={<NewArrivals />} />
                     <Route path="/ethnic-wear" element={<EthnicWear />} />

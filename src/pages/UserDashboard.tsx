@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { User, Mail, Phone, MapPin, Edit2, Save, X, Package, ShoppingBag, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -211,8 +211,10 @@ export default function UserDashboard() {
                         </div>
                       </div>
 
+                      {/* Items Section */}
                       {order.items && order.items.length > 0 && (
-                        <div className="bg-muted/30 rounded-lg p-4">
+                        <div className="bg-muted/30 rounded-lg p-4 mb-4">
+                          <h4 className="font-semibold text-sm mb-3 text-foreground">Order Items</h4>
                           <div className="space-y-2">
                             {order.items.map((item: any, index: number) => (
                               <div key={index} className="flex justify-between text-sm">
@@ -226,6 +228,53 @@ export default function UserDashboard() {
                                 </span>
                               </div>
                             ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Shipping Address Section */}
+                      {order.shippingAddress && (
+                        <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 mb-4">
+                          <h4 className="font-semibold text-sm mb-3 text-foreground">Shipping Address</h4>
+                          <div className="space-y-2 text-sm text-foreground">
+                            {(order.shippingAddress.firstName || order.shippingAddress.name) && (
+                              <p className="font-medium">
+                                {order.shippingAddress.firstName && order.shippingAddress.lastName
+                                  ? `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`
+                                  : order.shippingAddress.name || ''}
+                              </p>
+                            )}
+                            {order.shippingAddress.address && <p>{order.shippingAddress.address}</p>}
+                            {order.shippingAddress.city && (
+                              <p>
+                                {order.shippingAddress.city}
+                                {order.shippingAddress.state && `, ${order.shippingAddress.state}`}
+                                {order.shippingAddress.pincode && ` ${order.shippingAddress.pincode}`}
+                              </p>
+                            )}
+                            {order.shippingAddress.phone && <p>Phone: {order.shippingAddress.phone}</p>}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Tracking ID Section */}
+                      {order.trackingId && (
+                        <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4 mb-4">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-xs text-muted-foreground font-semibold uppercase mb-1">Tracking ID</p>
+                              <p className="font-mono text-sm font-bold text-foreground">{order.trackingId}</p>
+                            </div>
+                            <Button
+                              asChild
+                              variant="outline"
+                              size="sm"
+                              className="text-xs"
+                            >
+                              <Link to={`/track-order?id=${order.trackingId}`}>
+                                Track Order
+                              </Link>
+                            </Button>
                           </div>
                         </div>
                       )}
