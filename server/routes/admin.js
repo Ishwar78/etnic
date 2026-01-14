@@ -420,7 +420,17 @@ router.put('/payment-settings', async (req, res) => {
       upiName,
       codEnabled,
       codePaymentEnabled,
-      paymentCodes
+      paymentCodes,
+      invoiceCompanyLogo,
+      invoiceCompanyName,
+      invoiceCompanyGST,
+      invoiceCompanyAddress,
+      invoiceCompanyCity,
+      invoiceCompanyState,
+      invoiceCompanyZipCode,
+      invoiceCompanyCountry,
+      invoiceCompanyPhone,
+      invoiceCompanyEmail
     } = req.body;
 
     let paymentSettings = await PaymentSettings.findOne();
@@ -439,6 +449,18 @@ router.put('/payment-settings', async (req, res) => {
     if (codePaymentEnabled !== undefined) paymentSettings.codePaymentEnabled = codePaymentEnabled;
     if (paymentCodes) paymentSettings.paymentCodes = paymentCodes;
 
+    // Update invoice settings
+    if (invoiceCompanyLogo !== undefined) paymentSettings.invoiceCompanyLogo = invoiceCompanyLogo;
+    if (invoiceCompanyName !== undefined) paymentSettings.invoiceCompanyName = invoiceCompanyName;
+    if (invoiceCompanyGST !== undefined) paymentSettings.invoiceCompanyGST = invoiceCompanyGST;
+    if (invoiceCompanyAddress !== undefined) paymentSettings.invoiceCompanyAddress = invoiceCompanyAddress;
+    if (invoiceCompanyCity !== undefined) paymentSettings.invoiceCompanyCity = invoiceCompanyCity;
+    if (invoiceCompanyState !== undefined) paymentSettings.invoiceCompanyState = invoiceCompanyState;
+    if (invoiceCompanyZipCode !== undefined) paymentSettings.invoiceCompanyZipCode = invoiceCompanyZipCode;
+    if (invoiceCompanyCountry !== undefined) paymentSettings.invoiceCompanyCountry = invoiceCompanyCountry;
+    if (invoiceCompanyPhone !== undefined) paymentSettings.invoiceCompanyPhone = invoiceCompanyPhone;
+    if (invoiceCompanyEmail !== undefined) paymentSettings.invoiceCompanyEmail = invoiceCompanyEmail;
+
     paymentSettings.updatedAt = new Date();
     await paymentSettings.save();
 
@@ -450,6 +472,37 @@ router.put('/payment-settings', async (req, res) => {
   } catch (error) {
     console.error('Update payment settings error:', error);
     res.status(500).json({ error: 'Failed to update payment settings' });
+  }
+});
+
+// Get invoice settings (public - no auth needed)
+router.get('/invoice-settings/public', async (req, res) => {
+  try {
+    let paymentSettings = await PaymentSettings.findOne();
+
+    if (!paymentSettings) {
+      paymentSettings = new PaymentSettings();
+      await paymentSettings.save();
+    }
+
+    res.json({
+      success: true,
+      invoiceSettings: {
+        companyLogo: paymentSettings.invoiceCompanyLogo,
+        companyName: paymentSettings.invoiceCompanyName,
+        companyGST: paymentSettings.invoiceCompanyGST,
+        companyAddress: paymentSettings.invoiceCompanyAddress,
+        companyCity: paymentSettings.invoiceCompanyCity,
+        companyState: paymentSettings.invoiceCompanyState,
+        companyZipCode: paymentSettings.invoiceCompanyZipCode,
+        companyCountry: paymentSettings.invoiceCompanyCountry,
+        companyPhone: paymentSettings.invoiceCompanyPhone,
+        companyEmail: paymentSettings.invoiceCompanyEmail
+      }
+    });
+  } catch (error) {
+    console.error('Get invoice settings error:', error);
+    res.status(500).json({ error: 'Failed to fetch invoice settings' });
   }
 });
 
