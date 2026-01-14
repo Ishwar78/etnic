@@ -376,6 +376,15 @@ export default function OrderHistory() {
               </div>
 
               <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setSelectedOrderForInvoice(selectedOrder._id || selectedOrder.id);
+                    setShowInvoice(true);
+                  }}
+                >
+                  View Invoice
+                </Button>
                 <Button variant="outline" onClick={() => setSelectedOrder(null)}>
                   Close
                 </Button>
