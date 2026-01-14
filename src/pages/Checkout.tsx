@@ -348,9 +348,9 @@ export default function Checkout() {
                     <div className="text-center py-8">
                       <p className="text-muted-foreground">Loading payment options...</p>
                     </div>
-                  ) : (!paymentSettings?.upiEnabled) ? (
-                    <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
-                      <p className="text-sm text-yellow-600">
+                  ) : (!paymentSettings?.upiEnabled && !paymentSettings?.codEnabled) ? (
+                    <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
+                      <p className="text-sm text-red-600">
                         ⚠ No payment options available. Please contact support.
                       </p>
                     </div>
