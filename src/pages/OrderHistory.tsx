@@ -222,6 +222,166 @@ export default function OrderHistory() {
         </div>
       </main>
 
+      {/* Order Details Modal */}
+      <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          {selectedOrder && (
+            <>
+              <DialogHeader>
+                <DialogTitle>Order Details</DialogTitle>
+              </DialogHeader>
+
+              <div className="space-y-6">
+                {/* Order Header */}
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">Order ID</p>
+                    <p className="font-semibold text-foreground">#{selectedOrder._id?.toString().slice(-8).toUpperCase()}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">Order Date</p>
+                    <p className="font-semibold text-foreground">
+                      {format(new Date(selectedOrder.createdAt), "MMM dd, yyyy")}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">Status</p>
+                    <Badge className={`mt-1 ${
+                      selectedOrder.status === 'delivered' ? 'bg-green-500/10 text-green-600 border-green-500/20' :
+                      selectedOrder.status === 'shipped' ? 'bg-purple-500/10 text-purple-600 border-purple-500/20' :
+                      selectedOrder.status === 'confirmed' ? 'bg-blue-500/10 text-blue-600 border-blue-500/20' :
+                      selectedOrder.status === 'processing' ? 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20' :
+                      'bg-gray-500/10 text-gray-600 border-gray-500/20'
+                    }`}>
+                      {selectedOrder.status.charAt(0).toUpperCase() + selectedOrder.status.slice(1)}
+                    </Badge>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">Total Amount</p>
+                    <p className="font-semibold text-primary text-lg">₹{(selectedOrder.total || selectedOrder.totalAmount).toLocaleString()}</p>
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Order Items */}
+                <div>
+                  <h3 className="font-semibold text-foreground mb-3">Items Ordered</h3>
+                  <div className="space-y-3">
+                    {selectedOrder.items?.map((item: any, index: number) => (
+                      <div key={index} className="flex gap-4 p-3 bg-muted/50 rounded-lg">
+                        <div className="w-16 h-20 rounded-md overflow-hidden bg-muted flex-shrink-0">
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-foreground">{item.name}</p>
+                          {item.size && <p className="text-xs text-muted-foreground">Size: {item.size}</p>}
+                          {item.color && <p className="text-xs text-muted-foreground">Color: {item.color}</p>}
+                          <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
+                          <p className="text-sm font-semibold text-primary mt-1">
+                            ₹{(item.price * item.quantity).toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Shipping Address */}
+                {selectedOrder.shippingAddress && (
+                  <div>
+                    <h3 className="font-semibold text-foreground mb-3">Shipping Address</h3>
+                    <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 space-y-2">
+                      {(selectedOrder.shippingAddress.firstName || selectedOrder.shippingAddress.name) && (
+                        <p className="font-medium text-foreground">
+                          {selectedOrder.shippingAddress.firstName && selectedOrder.shippingAddress.lastName
+                            ? `${selectedOrder.shippingAddress.firstName} ${selectedOrder.shippingAddress.lastName}`
+                            : selectedOrder.shippingAddress.name || ''}
+                        </p>
+                      )}
+                      {selectedOrder.shippingAddress.phone && (
+                        <p className="text-sm text-foreground">Phone: {selectedOrder.shippingAddress.phone}</p>
+                      )}
+                      {(selectedOrder.shippingAddress.address || selectedOrder.shippingAddress.street) && (
+                        <p className="text-sm text-foreground">
+                          {selectedOrder.shippingAddress.address || selectedOrder.shippingAddress.street}
+                        </p>
+                      )}
+                      {(selectedOrder.shippingAddress.city || selectedOrder.shippingAddress.state || selectedOrder.shippingAddress.pincode) && (
+                        <p className="text-sm text-foreground">
+                          {selectedOrder.shippingAddress.city && `${selectedOrder.shippingAddress.city}, `}
+                          {selectedOrder.shippingAddress.state && `${selectedOrder.shippingAddress.state} `}
+                          {selectedOrder.shippingAddress.pincode || selectedOrder.shippingAddress.zipCode}
+                        </p>
+                      )}
+                      {selectedOrder.shippingAddress.country && (
+                        <p className="text-sm text-foreground">{selectedOrder.shippingAddress.country}</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Payment Method */}
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">Payment Method</p>
+                    <p className="font-medium text-foreground">
+                      {selectedOrder.paymentMethod ? selectedOrder.paymentMethod.split('_').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') : 'Not specified'}
+                    </p>
+                  </div>
+                  {selectedOrder.trackingId && (
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">Tracking ID</p>
+                      <p className="font-medium text-foreground font-mono">{selectedOrder.trackingId}</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Order Summary */}
+                <div className="bg-muted/30 rounded-lg p-4">
+                  <h3 className="font-semibold text-foreground mb-3">Order Summary</h3>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Subtotal</span>
+                      <span className="text-foreground">₹{(selectedOrder.subtotal || 0).toLocaleString()}</span>
+                    </div>
+                    {selectedOrder.shipping > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Shipping</span>
+                        <span className="text-foreground">₹{selectedOrder.shipping.toLocaleString()}</span>
+                      </div>
+                    )}
+                    {selectedOrder.shipping === 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Shipping</span>
+                        <span className="text-green-600">FREE</span>
+                      </div>
+                    )}
+                    <Separator className="my-2" />
+                    <div className="flex justify-between text-sm font-semibold">
+                      <span className="text-foreground">Total</span>
+                      <span className="text-primary">₹{(selectedOrder.total || selectedOrder.totalAmount).toLocaleString()}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setSelectedOrder(null)}>
+                  Close
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
       <Footer />
     </>
   );
