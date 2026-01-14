@@ -207,7 +207,10 @@ export default function OrderHistory() {
                         </div>
                       )}
 
-                      <Button className="w-full sm:w-auto">
+                      <Button
+                        className="w-full sm:w-auto"
+                        onClick={() => setSelectedOrder(order)}
+                      >
                         View Order Details
                       </Button>
                     </div>
