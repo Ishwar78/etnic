@@ -89,9 +89,9 @@ export default function AdminSidebar() {
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-  // Fetch pending orders count
+  // Fetch new orders count (confirmed status)
   useEffect(() => {
-    const fetchPendingCount = async () => {
+    const fetchNewOrdersCount = async () => {
       try {
         const response = await fetch(`${API_URL}/admin/orders/count/pending`, {
           headers: {
@@ -103,14 +103,14 @@ export default function AdminSidebar() {
           setPendingOrderCount(data.pendingCount || 0);
         }
       } catch (error) {
-        console.error('Error fetching pending orders count:', error);
+        console.error('Error fetching new orders count:', error);
       }
     };
 
     if (token) {
-      fetchPendingCount();
+      fetchNewOrdersCount();
       // Refresh count every 30 seconds
-      const interval = setInterval(fetchPendingCount, 30000);
+      const interval = setInterval(fetchNewOrdersCount, 30000);
       return () => clearInterval(interval);
     }
   }, [token, API_URL]);
