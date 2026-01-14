@@ -343,7 +343,6 @@ export default function Checkout() {
                         type="tel"
                         placeholder="+91 98765 43210"
                         required
-                        defaultValue={selectedAddressIndex !== null && savedAddresses[selectedAddressIndex] ? savedAddresses[selectedAddressIndex].phone : ''}
                       />
                     </div>
                   </div>
