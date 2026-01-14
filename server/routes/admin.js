@@ -253,10 +253,10 @@ router.get('/orders', async (req, res) => {
   }
 });
 
-// Get pending orders count
+// Get new orders count (confirmed status)
 router.get('/orders/count/pending', async (req, res) => {
   try {
-    const pendingCount = await Order.countDocuments({ status: 'pending' });
+    const pendingCount = await Order.countDocuments({ status: 'confirmed' });
 
     res.json({
       success: true,
@@ -264,8 +264,8 @@ router.get('/orders/count/pending', async (req, res) => {
       totalPending: pendingCount
     });
   } catch (error) {
-    console.error('Get pending orders count error:', error);
-    res.status(500).json({ error: 'Failed to fetch pending orders count' });
+    console.error('Get new orders count error:', error);
+    res.status(500).json({ error: 'Failed to fetch new orders count' });
   }
 });
 
