@@ -41,7 +41,7 @@ export default function Checkout() {
   useEffect(() => {
     const fetchPaymentSettings = async () => {
       try {
-        const response = await fetch(`${API_URL}/admin/payment-settings`);
+        const response = await fetch(`${API_URL}/admin/payment-settings/public`);
         if (response.ok) {
           const data = await response.json();
           setPaymentSettings(data.paymentSettings);
