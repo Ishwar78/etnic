@@ -192,6 +192,10 @@ router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
       stock,
       rating,
       isActive,
+      isNew,
+      isBestseller,
+      isSummer,
+      isWinter,
     } = req.body;
 
     // Get current product to check if name changed
@@ -228,6 +232,10 @@ router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
         stock,
         rating,
         isActive,
+        isNew,
+        isBestseller,
+        isSummer,
+        isWinter,
         updatedAt: new Date(),
       },
       { new: true }
