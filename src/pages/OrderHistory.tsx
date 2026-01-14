@@ -225,6 +225,16 @@ export default function OrderHistory() {
         </div>
       </main>
 
+      {/* Invoice Display */}
+      {selectedOrderForInvoice && (
+        <InvoiceDisplay
+          orderId={selectedOrderForInvoice}
+          open={showInvoice}
+          onOpenChange={setShowInvoice}
+          token={token}
+        />
+      )}
+
       {/* Order Details Modal */}
       <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
         <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
