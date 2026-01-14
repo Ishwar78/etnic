@@ -175,7 +175,19 @@ export default function AdminSidebar() {
                   title={collapsed ? item.title : undefined}
                 >
                   <item.icon className="h-5 w-5 flex-shrink-0" />
-                  {!collapsed && <span>{item.title}</span>}
+                  {!collapsed && (
+                    <div className="flex items-center justify-between flex-1">
+                      <span>{item.title}</span>
+                      {item.title === "Orders" && pendingOrderCount > 0 && (
+                        <Badge
+                          variant="destructive"
+                          className="ml-auto h-5 min-w-5 flex items-center justify-center px-1.5"
+                        >
+                          {pendingOrderCount}
+                        </Badge>
+                      )}
+                    </div>
+                  )}
                 </Link>
               ))}
             </nav>
