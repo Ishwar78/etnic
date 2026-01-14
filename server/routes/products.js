@@ -186,10 +186,29 @@ router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
       isActive,
     } = req.body;
 
+    // Get current product to check if name changed
+    const currentProduct = await Product.findById(req.params.id);
+    if (!currentProduct) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    // Generate new slug if name changed
+    let slug = currentProduct.slug;
+    if (name && name !== currentProduct.name) {
+      slug = generateSlug(name);
+
+      // Check if new slug already exists (exclude current product)
+      const existingProduct = await Product.findOne({ slug, _id: { $ne: req.params.id } });
+      if (existingProduct) {
+        return res.status(400).json({ error: 'A product with similar name already exists. Please use a different name.' });
+      }
+    }
+
     const product = await Product.findByIdAndUpdate(
       req.params.id,
       {
         name,
+        slug,
         description,
         price,
         originalPrice,
