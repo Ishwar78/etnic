@@ -887,6 +887,39 @@ export default function AdminDashboard() {
                   </div>
                 )}
 
+                {/* Tracking ID Update */}
+                <div className="bg-muted/30 rounded-lg p-4">
+                  <h3 className="font-semibold text-foreground mb-3">Tracking ID</h3>
+                  <div className="flex gap-3 items-end">
+                    <div className="flex-1">
+                      <Label className="text-foreground mb-2 block">Set Tracking ID</Label>
+                      <Input
+                        placeholder="e.g., TRACK123456 or Shipment ID"
+                        value={trackingId || (selectedOrder?.trackingId as string) || ""}
+                        onChange={(e) => setTrackingId(e.target.value)}
+                      />
+                      <p className="text-xs text-muted-foreground mt-2">
+                        This ID will be shown to customers to track their order
+                      </p>
+                    </div>
+                    <Button
+                      onClick={() => {
+                        updateTrackingId(selectedOrder._id, trackingId || (selectedOrder?.trackingId as string) || "");
+                      }}
+                      disabled={updatingTrackingId || !trackingId?.trim()}
+                    >
+                      {updatingTrackingId ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        'Save'
+                      )}
+                    </Button>
+                  </div>
+                </div>
+
                 {/* Order Status Update */}
                 <div className="bg-muted/30 rounded-lg p-4">
                   <h3 className="font-semibold text-foreground mb-3">Update Order Status</h3>
