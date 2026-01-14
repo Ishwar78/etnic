@@ -968,6 +968,7 @@ export default function AdminDashboard() {
                 <Button variant="outline" onClick={() => {
                   setSelectedOrder(null);
                   setNewOrderStatus(null);
+                  setTrackingId("");
                 }}>
                   Close
                 </Button>
