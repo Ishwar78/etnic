@@ -11,6 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { format } from "date-fns";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import InvoiceDisplay from "@/components/InvoiceDisplay";
 
 const statusColors = {
   confirmed: "bg-blue-500/10 text-blue-600 border-blue-500/20",
