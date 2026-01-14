@@ -83,7 +83,37 @@ const adminSections: SidebarItem[] = [
 export default function AdminSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const [pendingOrderCount, setPendingOrderCount] = useState(0);
   const location = useLocation();
+  const { token } = useAuth();
+
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+  // Fetch pending orders count
+  useEffect(() => {
+    const fetchPendingCount = async () => {
+      try {
+        const response = await fetch(`${API_URL}/admin/orders/count/pending`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        const data = await response.json();
+        if (data.success) {
+          setPendingOrderCount(data.totalPending || 0);
+        }
+      } catch (error) {
+        console.error('Error fetching pending orders count:', error);
+      }
+    };
+
+    if (token) {
+      fetchPendingCount();
+      // Refresh count every 30 seconds
+      const interval = setInterval(fetchPendingCount, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [token, API_URL]);
 
   const toggleExpand = (title: string) => {
     setExpandedItems((prev) =>
