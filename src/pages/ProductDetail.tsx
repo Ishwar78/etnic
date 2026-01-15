@@ -171,7 +171,7 @@ export default function ProductDetail() {
     setSelectedSize(null);
     setQuantity(1);
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [id]);
+  }, [slug]);
 
   // Fetch size chart when dialog opens
   useEffect(() => {
