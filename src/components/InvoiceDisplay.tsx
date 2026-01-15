@@ -533,6 +533,27 @@ export default function InvoiceDisplay({ orderId, open, onOpenChange, token }: I
 
               <Separator className="mb-6" />
 
+              {/* Payment Information */}
+              {(invoice.paymentMethod || invoice.transactionId) && (
+                <div className="mb-6 p-4 bg-muted/30 rounded-lg">
+                  <p className="text-xs font-bold text-muted-foreground uppercase mb-2">Payment Information</p>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    {invoice.paymentMethod && (
+                      <div>
+                        <p className="text-muted-foreground">Payment Method</p>
+                        <p className="font-medium capitalize">{invoice.paymentMethod.replace(/_/g, ' ')}</p>
+                      </div>
+                    )}
+                    {invoice.transactionId && (
+                      <div>
+                        <p className="text-muted-foreground">Transaction ID</p>
+                        <p className="font-medium font-mono text-xs">{invoice.transactionId}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* Items Table */}
               <div className="mb-8">
                 <table className="w-full text-sm">
