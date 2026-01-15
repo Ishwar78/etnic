@@ -174,10 +174,23 @@ router.put('/:id/status', authMiddleware, async (req, res) => {
       req.params.id,
       { status, updatedAt: new Date() },
       { new: true }
-    );
+    ).populate('userId', 'name email');
 
     if (!order) {
       return res.status(404).json({ error: 'Order not found' });
+    }
+
+    // Send order status update email (non-blocking)
+    if (order.userId && order.userId.email) {
+      sendOrderStatusEmail(
+        order.userId.email,
+        order.userId.name,
+        order._id,
+        status,
+        order.trackingId || null
+      ).catch(err => {
+        console.error('Failed to send order status email:', err);
+      });
     }
 
     res.json({
