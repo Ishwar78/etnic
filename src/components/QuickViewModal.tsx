@@ -9,6 +9,7 @@ import { useWishlist } from "@/contexts/WishlistContext";
 
 interface QuickViewProduct {
   id: number;
+  slug?: string;
   name: string;
   price: number;
   originalPrice?: number;
@@ -208,7 +209,7 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
                 </Button>
               </div>
               <Button variant="outline" size="lg" className="w-full" asChild>
-                <Link to={`/product/${product.id}`} onClick={onClose}>
+                <Link to={`/product/${product.slug || product.id}`} onClick={onClose}>
                   View Full Details
                 </Link>
               </Button>
