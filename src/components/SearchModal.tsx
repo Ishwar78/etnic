@@ -119,7 +119,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   }, [isOpen, highlightedIndex, filteredProducts, onClose]);
 
   const handleProductClick = (product: Product) => {
-    navigate(`/product/${product._id || product.id}`);
+    navigate(`/product/${product.slug || product._id || product.id}`);
     onClose();
   };
 

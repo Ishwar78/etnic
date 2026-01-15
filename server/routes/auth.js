@@ -2,6 +2,7 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import User from '../models/User.js';
 import { generateToken, authMiddleware } from '../middleware/auth.js';
+import { sendRegistrationEmail, sendLoginNotificationEmail } from '../services/mailService.js';
 
 const router = express.Router();
 
@@ -32,6 +33,11 @@ router.post('/signup', async (req, res) => {
     });
 
     await user.save();
+
+    // Send registration confirmation email (non-blocking)
+    sendRegistrationEmail(user.email, user.name).catch(err => {
+      console.error('Failed to send registration email:', err);
+    });
 
     // Generate token
     const token = generateToken(user._id, user.role);
@@ -75,6 +81,16 @@ router.post('/login', async (req, res) => {
 
     // Generate token
     const token = generateToken(user._id, user.role);
+
+    // Send login notification email (non-blocking)
+    const loginTime = new Date().toLocaleString('en-IN', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+      timeZone: 'Asia/Kolkata'
+    });
+    sendLoginNotificationEmail(user.email, user.name, loginTime).catch(err => {
+      console.error('Failed to send login notification email:', err);
+    });
 
     res.json({
       success: true,

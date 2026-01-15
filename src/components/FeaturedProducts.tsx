@@ -23,6 +23,7 @@ function ProductCard({ product, index }: ProductCardProps) {
   const { isInWishlist, toggleWishlist } = useWishlist();
 
   const productId = product._id || product.id;
+  const productSlug = product.slug || productId;
   const isWishlisted = isInWishlist(productId as string | number);
   const hoverImage = (product.images && product.images[1]) || product.image;
   const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
@@ -66,7 +67,7 @@ function ProductCard({ product, index }: ProductCardProps) {
         onMouseLeave={() => setIsHovered(false)}
       >
         <div className="relative overflow-hidden rounded-lg bg-card shadow-soft group-hover:shadow-hover transition-all duration-500">
-          <Link to={`/product/${productId}`} className="block relative aspect-[3/4] overflow-hidden">
+          <Link to={`/product/${productSlug}`} className="block relative aspect-[3/4] overflow-hidden">
             <img
               src={isHovered ? hoverImage : product.image}
               alt={product.name}
@@ -130,7 +131,7 @@ function ProductCard({ product, index }: ProductCardProps) {
             <span className="text-xs text-muted-foreground uppercase tracking-wider">
               {product.category}
             </span>
-            <Link to={`/product/${productId}`}>
+            <Link to={`/product/${productSlug}`}>
               <h3 className="font-display text-lg font-semibold text-foreground mt-1 group-hover:text-primary transition-colors line-clamp-1">
                 {product.name}
               </h3>

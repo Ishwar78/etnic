@@ -55,6 +55,7 @@ export default function ProductCard({ product, index = 0, showTrending = false }
   // Get the second image for hover state, or use the main image if only one is available
   const hoverImage = product.images && product.images.length > 1 ? product.images[1] : product.image;
   const productId = product.id || product._id;
+  const productSlug = product.slug || productId;
 
   return (
     <>
@@ -65,7 +66,7 @@ export default function ProductCard({ product, index = 0, showTrending = false }
         onMouseLeave={() => setIsHovered(false)}
       >
         <div className="relative overflow-hidden rounded-lg bg-card shadow-soft group-hover:shadow-hover transition-all duration-500">
-          <Link to={`/product/${productId}`} className="block relative aspect-[3/4] overflow-hidden">
+          <Link to={`/product/${productSlug}`} className="block relative aspect-[3/4] overflow-hidden">
             <img
               src={isHovered ? hoverImage : product.image}
               alt={product.name}
@@ -124,7 +125,7 @@ export default function ProductCard({ product, index = 0, showTrending = false }
 
           <div className="p-4">
             <span className="text-xs text-muted-foreground uppercase tracking-wider">{product.category}</span>
-            <Link to={`/product/${productId}`}>
+            <Link to={`/product/${productSlug}`}>
               <h3 className="font-display text-lg font-semibold text-foreground mt-1 group-hover:text-primary transition-colors line-clamp-1">
                 {product.name}
               </h3>

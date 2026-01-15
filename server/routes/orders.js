@@ -1,6 +1,8 @@
 import express from 'express';
 import Order from '../models/Order.js';
+import User from '../models/User.js';
 import { authMiddleware } from '../middleware/auth.js';
+import { sendOrderConfirmationEmail, sendOrderStatusEmail } from '../services/mailService.js';
 
 const router = express.Router();
 
@@ -57,6 +59,26 @@ router.post('/', authMiddleware, async (req, res) => {
     });
 
     await order.save();
+
+    // Send order confirmation email (non-blocking)
+    try {
+      const user = await User.findById(req.user._id);
+      if (user) {
+        const estimatedDelivery = '5-7 business days';
+        sendOrderConfirmationEmail(
+          user.email,
+          user.name,
+          order._id,
+          order.items,
+          order.totalAmount,
+          estimatedDelivery
+        ).catch(err => {
+          console.error('Failed to send order confirmation email:', err);
+        });
+      }
+    } catch (err) {
+      console.error('Error in email notification:', err);
+    }
 
     res.status(201).json({
       success: true,
@@ -152,10 +174,23 @@ router.put('/:id/status', authMiddleware, async (req, res) => {
       req.params.id,
       { status, updatedAt: new Date() },
       { new: true }
-    );
+    ).populate('userId', 'name email');
 
     if (!order) {
       return res.status(404).json({ error: 'Order not found' });
+    }
+
+    // Send order status update email (non-blocking)
+    if (order.userId && order.userId.email) {
+      sendOrderStatusEmail(
+        order.userId.email,
+        order.userId.name,
+        order._id,
+        status,
+        order.trackingId || null
+      ).catch(err => {
+        console.error('Failed to send order status email:', err);
+      });
     }
 
     res.json({

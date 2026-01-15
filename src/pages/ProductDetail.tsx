@@ -64,7 +64,7 @@ function getColorHex(colorName: string): string | null {
 }
 
 export default function ProductDetail() {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
@@ -86,7 +86,7 @@ export default function ProductDetail() {
     const fetchProduct = async () => {
       try {
         setIsProductLoading(true);
-        const response = await fetch(`${API_URL}/products/${id}`);
+        const response = await fetch(`${API_URL}/products/slug/${slug}`);
         if (response.ok) {
           const data = await response.json();
           const fetchedProduct = data.product;
@@ -106,10 +106,10 @@ export default function ProductDetail() {
       }
     };
 
-    if (id) {
+    if (slug) {
       fetchProduct();
     }
-  }, [id, navigate, addToRecentlyViewed]);
+  }, [slug, navigate, addToRecentlyViewed]);
 
   // Fetch related products
   const fetchRelatedProducts = async (currentProduct: Product) => {

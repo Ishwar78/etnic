@@ -1,19 +1,21 @@
 /**
  * Extracts video ID from YouTube URL and returns embed URL
+ * Note: Autoplay is disabled by default due to browser policies
  */
 export function getYouTubeEmbedUrl(url: string): string | null {
   try {
     // Handle youtu.be short URLs
     const shortMatch = url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
-    if (shortMatch) return `https://www.youtube.com/embed/${shortMatch[1]}?autoplay=1&mute=1`;
+    if (shortMatch) return `https://www.youtube.com/embed/${shortMatch[1]}`;
 
     // Handle youtube.com URLs with watch?v=
     const watchMatch = url.match(/youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/);
-    if (watchMatch) return `https://www.youtube.com/embed/${watchMatch[1]}?autoplay=1&mute=1`;
+    if (watchMatch) return `https://www.youtube.com/embed/${watchMatch[1]}`;
 
     // Handle already embed URLs
     if (url.includes('youtube.com/embed/')) {
-      return url.includes('autoplay=1') ? url : url + (url.includes('?') ? '&' : '?') + 'autoplay=1&mute=1';
+      // Remove autoplay params if they exist
+      return url.replace(/[?&]autoplay=\d+/g, '').replace(/[?&]mute=\d+/g, '');
     }
 
     return null;

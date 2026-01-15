@@ -24,6 +24,7 @@ interface Product {
   originalPrice: number;
   category: string;
   image: string;
+  images?: string[];
   subcategory?: string;
   sizes?: string[];
   colors?: string[];
@@ -115,6 +116,10 @@ export default function ProductManagement() {
 
   const handleEdit = (product: Product) => {
     setSelectedProduct(product);
+
+    // Filter out the main image from additional images
+    const additionalImages = (product.images || []).filter(img => img !== product.image);
+
     setFormData({
       name: product.name,
       price: product.price.toString(),
@@ -129,10 +134,10 @@ export default function ProductManagement() {
       isWinter: product.isWinter || false,
       description: "",
       image: product.image,
-      images: [],
+      images: additionalImages,
     });
     setImagePreview(product.image);
-    setImagePreviews([]);
+    setImagePreviews(additionalImages);
     setIsAddMode(false);
     setIsDialogOpen(true);
   };
