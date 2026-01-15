@@ -24,6 +24,7 @@ interface Product {
   originalPrice: number;
   category: string;
   image: string;
+  images?: string[];
   subcategory?: string;
   sizes?: string[];
   colors?: string[];
