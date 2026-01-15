@@ -390,11 +390,14 @@ export default function AdminHeroMediaManagement() {
                   value={formData.mediaUrl}
                   onChange={(e) => setFormData({ ...formData, mediaUrl: e.target.value })}
                 />
-                <div className="text-xs text-muted-foreground space-y-1 mt-2 p-2 bg-muted rounded">
+                <div className="text-xs space-y-2 mt-2 p-3 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded">
                   <p className="font-semibold text-foreground">How to add videos:</p>
                   <p>📺 <strong>YouTube:</strong> https://youtu.be/VIDEO_ID or https://www.youtube.com/watch?v=VIDEO_ID</p>
                   <p>📸 <strong>Instagram:</strong> https://www.instagram.com/p/POST_ID/ or https://www.instagram.com/reel/REEL_ID/</p>
-                  <p>🎬 <strong>Direct Video:</strong> https://example.com/video.mp4</p>
+                  <p>🎬 <strong>Direct Video:</strong> https://example.com/video.mp4 (MP4, WebM, OGG)</p>
+                  <p className="mt-2 text-blue-700 dark:text-blue-300">
+                    ℹ️ <strong>Note:</strong> Videos will not autoplay due to browser policies. Users can click to play.
+                  </p>
                 </div>
               </div>
 
