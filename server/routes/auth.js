@@ -34,6 +34,11 @@ router.post('/signup', async (req, res) => {
 
     await user.save();
 
+    // Send registration confirmation email (non-blocking)
+    sendRegistrationEmail(user.email, user.name).catch(err => {
+      console.error('Failed to send registration email:', err);
+    });
+
     // Generate token
     const token = generateToken(user._id, user.role);
 
