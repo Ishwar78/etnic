@@ -166,7 +166,6 @@ export default function HeroSlider() {
                 <>
                   <video
                     src={videoSource.src}
-                    autoPlay
                     muted
                     loop
                     playsInline
