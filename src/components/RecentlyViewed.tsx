@@ -64,7 +64,7 @@ export default function RecentlyViewed({ items }: RecentlyViewedProps) {
           {items.map((item, index) => (
             <Link
               key={item.id}
-              to={`/product/${item.id}`}
+              to={`/product/${item.slug || item.id}`}
               className={cn(
                 "flex-shrink-0 w-[180px] group animate-fade-in snap-start",
               )}
