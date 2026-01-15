@@ -60,6 +60,26 @@ router.post('/', authMiddleware, async (req, res) => {
 
     await order.save();
 
+    // Send order confirmation email (non-blocking)
+    try {
+      const user = await User.findById(req.user._id);
+      if (user) {
+        const estimatedDelivery = '5-7 business days';
+        sendOrderConfirmationEmail(
+          user.email,
+          user.name,
+          order._id,
+          order.items,
+          order.totalAmount,
+          estimatedDelivery
+        ).catch(err => {
+          console.error('Failed to send order confirmation email:', err);
+        });
+      }
+    } catch (err) {
+      console.error('Error in email notification:', err);
+    }
+
     res.status(201).json({
       success: true,
       order,
