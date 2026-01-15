@@ -1,6 +1,8 @@
 import express from 'express';
 import Order from '../models/Order.js';
+import User from '../models/User.js';
 import { authMiddleware } from '../middleware/auth.js';
+import { sendOrderConfirmationEmail, sendOrderStatusEmail } from '../services/mailService.js';
 
 const router = express.Router();
 
