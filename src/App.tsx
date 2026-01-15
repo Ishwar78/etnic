@@ -60,7 +60,7 @@ const App = () => (
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/shop" element={<Shop />} />
-                    <Route path="/product/:id" element={<ProductDetail />} />
+                    <Route path="/product/:slug" element={<ProductDetail />} />
                     <Route path="/install" element={<Install />} />
                     <Route path="/checkout" element={<Checkout />} />
                     <Route path="/track-order" element={<TrackOrder />} />
