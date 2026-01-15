@@ -356,6 +356,28 @@ export default function InvoiceDisplay({ orderId, open, onOpenChange, token }: I
             </div>
           </div>
 
+          ${(inv.paymentMethod || inv.transactionId) ? `
+            <div style="margin-bottom: 40px; padding: 15px; background-color: #f9f9f9; border-radius: 4px;">
+              <div style="font-size: 12px; font-weight: bold; color: #666; text-transform: uppercase; margin-bottom: 10px;">
+                Payment Information
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                ${inv.paymentMethod ? `
+                  <div>
+                    <div style="color: #666; font-size: 11px; margin-bottom: 3px;">Payment Method</div>
+                    <div style="font-weight: bold; color: #333;">${inv.paymentMethod.replace(/_/g, ' ')}</div>
+                  </div>
+                ` : ''}
+                ${inv.transactionId ? `
+                  <div>
+                    <div style="color: #666; font-size: 11px; margin-bottom: 3px;">Transaction ID</div>
+                    <div style="font-family: monospace; font-size: 10px; color: #333;">${inv.transactionId}</div>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+          ` : ''}
+
           <div class="invoice-items">
             <table class="items-table">
               <thead>
