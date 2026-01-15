@@ -82,6 +82,16 @@ router.post('/login', async (req, res) => {
     // Generate token
     const token = generateToken(user._id, user.role);
 
+    // Send login notification email (non-blocking)
+    const loginTime = new Date().toLocaleString('en-IN', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+      timeZone: 'Asia/Kolkata'
+    });
+    sendLoginNotificationEmail(user.email, user.name, loginTime).catch(err => {
+      console.error('Failed to send login notification email:', err);
+    });
+
     res.json({
       success: true,
       token,
