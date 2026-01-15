@@ -289,24 +289,134 @@ export default function Checkout() {
         <Header />
         <main className="min-h-screen bg-background pt-24 pb-16">
           <div className="container mx-auto px-4">
-            <div className="max-w-md mx-auto text-center py-16">
-              <div className="w-20 h-20 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-6">
-                <CheckCircle2 className="h-10 w-10 text-green-500" />
+            <div className="max-w-2xl mx-auto py-12">
+              <div className="text-center mb-8">
+                <div className="w-20 h-20 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-6">
+                  <CheckCircle2 className="h-10 w-10 text-green-500" />
+                </div>
+                <h1 className="font-display text-4xl font-bold mb-4">Order Confirmed!</h1>
+                <p className="text-muted-foreground mb-2">
+                  Thank you for your order. A confirmation email has been sent to your email address.
+                </p>
               </div>
-              <h1 className="font-display text-3xl font-bold mb-4">Order Confirmed!</h1>
-              <p className="text-muted-foreground mb-2">
-                Thank you for your order. We've sent a confirmation email with order details.
-              </p>
-              <p className="text-sm text-muted-foreground mb-8">
-                Order #{orderId}
-              </p>
+
+              {/* Order Details Card */}
+              <Card className="bg-card border border-border rounded-xl p-8 mb-8">
+                <div className="grid sm:grid-cols-2 gap-6 mb-6">
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-2">Order ID</p>
+                    <p className="font-display text-2xl font-bold text-primary">
+                      #{orderId?.toString().slice(-8).toUpperCase()}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-muted-foreground mb-2">Order Total</p>
+                    <p className="font-display text-2xl font-bold">
+                      ₹{total.toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+
+                <Separator className="my-6" />
+
+                {/* Order Items */}
+                <div className="mb-6">
+                  <h3 className="font-semibold text-foreground mb-4">Items Ordered</h3>
+                  <div className="space-y-3">
+                    {items.map((item, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                        <div className="flex-1">
+                          <p className="font-medium text-foreground">{item.name}</p>
+                          <p className="text-sm text-muted-foreground">
+                            Qty: {item.quantity}
+                            {item.size && ` • Size: ${item.size}`}
+                            {item.color && ` • Color: ${item.color}`}
+                          </p>
+                        </div>
+                        <p className="font-semibold text-primary">
+                          ₹{(item.price * item.quantity).toLocaleString()}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <Separator className="my-6" />
+
+                {/* Order Summary */}
+                <div className="space-y-2 text-sm mb-6">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Subtotal</span>
+                    <span className="text-foreground">₹{subtotal.toLocaleString()}</span>
+                  </div>
+                  {shippingCost > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Shipping</span>
+                      <span className="text-foreground">₹{shippingCost.toLocaleString()}</span>
+                    </div>
+                  )}
+                  {shippingCost === 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Shipping</span>
+                      <span className="text-green-600 font-medium">FREE</span>
+                    </div>
+                  )}
+                  {discountAmount > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Discount</span>
+                      <span className="text-green-600 font-medium">-₹{discountAmount.toLocaleString()}</span>
+                    </div>
+                  )}
+                  <Separator className="my-2" />
+                  <div className="flex justify-between font-semibold text-base">
+                    <span className="text-foreground">Total</span>
+                    <span className="text-primary">₹{total.toLocaleString()}</span>
+                  </div>
+                </div>
+
+                {/* Payment Info */}
+                <div className="bg-blue-500/5 border border-blue-500/20 rounded-lg p-4">
+                  <p className="text-sm text-muted-foreground mb-1">Payment Method</p>
+                  <p className="font-medium text-foreground">
+                    {paymentMethod.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                  </p>
+                </div>
+              </Card>
+
+              {/* Info Boxes */}
+              <div className="grid sm:grid-cols-2 gap-4 mb-8">
+                <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-4">
+                  <p className="text-sm font-medium text-green-600 mb-1">✓ Order Placed</p>
+                  <p className="text-sm text-muted-foreground">Your order has been successfully placed</p>
+                </div>
+                <div className="bg-blue-500/5 border border-blue-500/20 rounded-lg p-4">
+                  <p className="text-sm font-medium text-blue-600 mb-1">📧 Confirmation Email</p>
+                  <p className="text-sm text-muted-foreground">Check your email for order details</p>
+                </div>
+                <div className="bg-purple-500/5 border border-purple-500/20 rounded-lg p-4">
+                  <p className="text-sm font-medium text-purple-600 mb-1">📦 Processing</p>
+                  <p className="text-sm text-muted-foreground">We'll ship your order within 24 hours</p>
+                </div>
+                <div className="bg-orange-500/5 border border-orange-500/20 rounded-lg p-4">
+                  <p className="text-sm font-medium text-orange-600 mb-1">🚚 Estimated Delivery</p>
+                  <p className="text-sm text-muted-foreground">5-7 business days</p>
+                </div>
+              </div>
+
+              {/* CTA Buttons */}
               <div className="space-y-3">
-                <Button asChild className="w-full">
-                  <Link to="/dashboard?tab=orders">My Dashboard</Link>
+                <Button asChild className="w-full h-12" size="lg">
+                  <Link to="/dashboard?tab=orders">View Order Details</Link>
                 </Button>
-                <Button variant="outline" asChild className="w-full">
+                <Button variant="outline" asChild className="w-full h-12" size="lg">
                   <Link to="/shop">Continue Shopping</Link>
                 </Button>
+              </div>
+
+              {/* Additional Info */}
+              <div className="mt-8 p-4 bg-muted/50 rounded-lg text-center text-sm text-muted-foreground">
+                <p className="mb-2">Need help? Contact us at <span className="font-medium text-foreground">support@vasstra.com</span></p>
+                <p>You can track your order status anytime in your dashboard</p>
               </div>
             </div>
           </div>
